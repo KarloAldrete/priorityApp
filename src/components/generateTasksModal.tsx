@@ -9,13 +9,52 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    Form,
+    FormControl,
+    FormField, FormItem,
+    FormLabel,
+    FormMessage
+} from '@/components/ui/form';
+import { TagInput, Tag } from 'emblor';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+
+
+const FormSchema = z.object({
+    technologies: z.array(z.string()),
+});
+
+
 
 export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, setIsVisible: (visible: boolean) => void }) {
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+    });
+    const { setValue } = form;
+
     const [recommendations, setRecommendations] = useState(false);
-    const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const [generation, setGeneration] = useState<string>('');
     const [visible, setVisible] = useState(isVisible);
+    const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+
+    const [projectName, setProjectName] = useState('');
+    const [description, setDescription] = useState('');
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [teamSize, setTeamSize] = useState(0);
+    const [payRoll, setPayRoll] = useState('hora');
+    const [moneyAmount, setMoneyAmount] = useState(0);
+    const [workingPeriod, setWorkingPeriod] = useState(0);
+    const [isFreeWeekends, setFreeWeekends] = useState(false);
+    const [restrictions, setRestrictions] = useState('');
+
+    useEffect(() => {
+        console.log(tags);
+    }, [tags]);
+
 
     useEffect(() => {
         setVisible(isVisible);
@@ -50,6 +89,18 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
         setIsVisible(false);
     };
 
+    function handleSendData() {
+        console.log(`Nombre del proyecto: ${projectName} 🚀`);
+        console.log(`Descripción: ${description} 📝`);
+        console.log(`Etiquetas: ${tags.map(tag => tag.text).join(', ')} 🏷️`);
+        console.log(`Tamaño del equipo: ${teamSize} 👥`);
+        console.log(`Pago: ${payRoll} 💸`);
+        console.log(`Monto: ${moneyAmount} 💸`);
+        console.log(`Periodo de trabajo: ${workingPeriod} hrs ⏰`);
+        console.log(`Fines de semana libres: ${isFreeWeekends ? 'Sí' : 'No'} 🌞`);
+        console.log(`Restricciones: ${restrictions} 🚫`);
+    }
+
     return (
         <>
             {visible &&
@@ -82,6 +133,8 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
                                     <input
                                         className='w-full h-9 border border-[#E8E6EF] p-3 placeholder:text-[#9595A7] text-sm font-medium leading-5 rounded-md'
                                         placeholder='Ingresa un nombre para el proyecto'
+                                        value={projectName}
+                                        onChange={(e) => setProjectName(e.target.value)}
                                     />
 
                                 </div>
@@ -99,18 +152,34 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
                                 </div>
 
-                                {/* <div className='w-full h-auto flex flex-col items-start justify-start'>
-
-                                    <span className='font-geist font-semibold text-base leading-6'>Tecnologías</span>
-
-                                    <div className='flex flex-wrap gap-2'>
-                                        <span className='bg-black text-white px-2 py-1 rounded-md'>Stripe</span>
-                                        <span className='bg-black text-white px-2 py-1 rounded-md'>Next Js</span>
-                                        <span className='bg-black text-white px-2 py-1 rounded-md'>Nest Js</span>
-                                        <span className='bg-black text-white px-2 py-1 rounded-md'>Supabase</span>
-                                    </div>
-
-                                </div> */}
+                                <Form {...form}>
+                                    <FormField
+                                        control={form.control}
+                                        name="technologies"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full h-auto flex flex-col items-start">
+                                                <FormLabel className="text-left font-geist font-semibold text-base leading-6">Tecnologías</FormLabel>
+                                                <FormControl>
+                                                    <TagInput
+                                                        {...field}
+                                                        placeholder="Agrega tecnologías al proyecto"
+                                                        tags={tags}
+                                                        setTags={(newTags) => {
+                                                            setTags(newTags);
+                                                            setValue('technologies', Array.isArray(newTags) ? newTags.map(tag => tag.text) : []);
+                                                        }}
+                                                        activeTagIndex={activeTagIndex}
+                                                        setActiveTagIndex={setActiveTagIndex}
+                                                        styleClasses={{
+                                                            input: 'w-full h-auto flex flex-wrap items-start justify-start px-1 placeholder:text-[#9595A7] font-medium',
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </Form>
 
                                 <div className='w-full h-auto flex flex-row items-end justify-start gap-4'>
 
@@ -118,19 +187,20 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
                                         <span className='font-geist font-semibold text-base leading-5'>Personas en el equipo</span>
 
-                                        <Select>
+                                        <Select onValueChange={setTeamSize} value={teamSize}>
                                             <SelectTrigger className="w-[180px] h-9">
-                                                <SelectValue placeholder="8" />
+                                                <SelectValue placeholder="0" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="1">1</SelectItem>
-                                                <SelectItem value="2">2</SelectItem>
-                                                <SelectItem value="3">3</SelectItem>
-                                                <SelectItem value="4">4</SelectItem>
-                                                <SelectItem value="5">5</SelectItem>
-                                                <SelectItem value="6">6</SelectItem>
-                                                <SelectItem value="7">7</SelectItem>
-                                                <SelectItem value="8">8</SelectItem>
+                                                <SelectItem value={0}>0</SelectItem>
+                                                <SelectItem value={1}>1</SelectItem>
+                                                <SelectItem value={2}>2</SelectItem>
+                                                <SelectItem value={3}>3</SelectItem>
+                                                <SelectItem value={4}>4</SelectItem>
+                                                <SelectItem value={5}>5</SelectItem>
+                                                <SelectItem value={6}>6</SelectItem>
+                                                <SelectItem value={7}>7</SelectItem>
+                                                <SelectItem value={8}>8</SelectItem>
                                             </SelectContent>
                                         </Select>
 
@@ -152,45 +222,76 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
                                 </div>
 
-                                <div className='w-full h-auto flex flex-row items-center justify-between'>
+                                <div className='w-full h-auto flex flex-row items-center justify-start gap-4'>
 
-                                    <div className='w-full h-auto flex flex-col items-start justify-start border border-red-600'>
+                                    <div className='w-auto h-auto flex flex-col items-start justify-start gap-1.5'>
 
-                                        <span className='font-geist font-semibold text-base leading-6'>Monto</span>
+                                        <div className='w-auto h-auto flex flex-row items-center justify-start gap-3'>
 
-                                        <div className='flex items-center gap-2'>
-                                            <input type='radio' name='monto' value='hora' className='mr-1' /> Hora
-                                            <input type='radio' name='monto' value='dia' className='mr-1' /> Día
+                                            <span className='font-geist font-semibold text-base leading-6'>Monto</span>
+
+                                            <div className='flex items-center gap-2'>
+
+                                                <div className='w-auto h-auto flex flex-row items-center justify-start gap-2'>
+
+                                                    <input
+                                                        type='radio'
+                                                        name='monto'
+                                                        value='hora'
+                                                        checked={payRoll === 'hora'}
+                                                        onChange={() => setPayRoll('hora')}
+                                                    />
+                                                    <span>Hora</span>
+
+                                                </div>
+
+                                                <div className='w-auto h-auto flex flex-row items-center justify-start gap-2'>
+
+                                                    <input
+                                                        type='radio'
+                                                        name='monto'
+                                                        value='dia'
+                                                        checked={payRoll === 'dia'}
+                                                        onChange={() => setPayRoll('dia')}
+                                                    />
+                                                    <span>Día</span>
+
+                                                </div>
+
+                                            </div>
+
                                         </div>
 
-                                        <Select>
-                                            <SelectTrigger className="w-[100px] h-9">
-                                                <SelectValue placeholder="$ 25" />
+                                        <Select onValueChange={setMoneyAmount} value={moneyAmount}>
+                                            <SelectTrigger className="w-auto min-w-[188px] h-9">
+                                                <SelectValue placeholder="$ 0" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="10">$ 10</SelectItem>
-                                                <SelectItem value="20">$ 20</SelectItem>
-                                                <SelectItem value="25">$ 25</SelectItem>
-                                                <SelectItem value="30">$ 30</SelectItem>
-                                                <SelectItem value="40">$ 40</SelectItem>
+                                                <SelectItem value={0}>$ 0</SelectItem>
+                                                <SelectItem value={10}>$ 10</SelectItem>
+                                                <SelectItem value={20}>$ 20</SelectItem>
+                                                <SelectItem value={25}>$ 25</SelectItem>
+                                                <SelectItem value={30}>$ 30</SelectItem>
+                                                <SelectItem value={40}>$ 40</SelectItem>
                                             </SelectContent>
                                         </Select>
 
                                     </div>
 
-                                    <div className='w-full h-auto flex flex-col items-start justify-start border border-red-600'>
+                                    <div className='w-auto h-auto flex flex-col items-start justify-start gap-1.5'>
 
                                         <span className='font-geist font-semibold text-base leading-6'>Jornada laboral (hrs)</span>
 
-                                        <Select>
-                                            <SelectTrigger className="w-[100px] h-9">
-                                                <SelectValue placeholder="8" />
+                                        <Select onValueChange={setWorkingPeriod} value={workingPeriod}>
+                                            <SelectTrigger className="w-full h-9">
+                                                <SelectValue placeholder="0" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="4">4</SelectItem>
-                                                <SelectItem value="6">6</SelectItem>
-                                                <SelectItem value="8">8</SelectItem>
-                                                <SelectItem value="10">10</SelectItem>
+                                                <SelectItem value={0}>0</SelectItem>
+                                                <SelectItem value={4}>4</SelectItem>
+                                                <SelectItem value={6}>6</SelectItem>
+                                                <SelectItem value={8}>8</SelectItem>
+                                                <SelectItem value={10}>10</SelectItem>
                                             </SelectContent>
                                         </Select>
 
@@ -213,8 +314,8 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
                                         <input
                                             type='checkbox'
                                             className='sr-only peer'
-                                            checked={recommendations}
-                                            onChange={() => setRecommendations(!recommendations)}
+                                            checked={isFreeWeekends}
+                                            onChange={() => setFreeWeekends(!isFreeWeekends)}
                                         />
 
                                         <div className="w-7 h-4 bg-gray-300 rounded-[10px] p-[2px] peer peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
@@ -230,6 +331,8 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
                                     <textarea
                                         className='w-full h-9 min-h-[88px] border border-[#E8E6EF] p-3 placeholder:text-[#9595A7] text-sm leading-5 rounded-md resize-y'
                                         placeholder='Escribe aquí si existe alguna restricción o limitación...'
+                                        value={restrictions}
+                                        onChange={(e) => setRestrictions(e.target.value)}
                                     />
 
                                 </div>
@@ -238,7 +341,7 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
                             <button
                                 className='w-full h-auto bg-black rounded-md text-white font-semibold text-sm leading-5 flex flex-row items-center justify-center px-3 py-1.5'
-                                onClick={handleGenerateTasks}
+                                onClick={handleSendData}
                                 disabled={loading}
                             >
                                 {loading ? (
