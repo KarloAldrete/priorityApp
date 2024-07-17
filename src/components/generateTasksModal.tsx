@@ -20,6 +20,7 @@ import { TagInput, Tag } from 'emblor';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUser } from '@clerk/nextjs';
 
 
 
@@ -34,6 +35,7 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
         resolver: zodResolver(FormSchema),
     });
     const { setValue } = form;
+    const { user } = useUser();
 
     const [recommendations, setRecommendations] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -50,11 +52,6 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
     const [workingPeriod, setWorkingPeriod] = useState(0);
     const [isFreeWeekends, setFreeWeekends] = useState(false);
     const [restrictions, setRestrictions] = useState('');
-
-    useEffect(() => {
-        console.log(tags);
-    }, [tags]);
-
 
     useEffect(() => {
         setVisible(isVisible);
@@ -80,8 +77,20 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
     const handleGenerateTasks = async () => {
         setLoading(true);
-        const { text } = await getAnswer(description);
-        setGeneration(text);
+        const data = {
+            projectName,
+            description,
+            tags: tags.map(tag => tag.text),
+            teamSize,
+            payRoll,
+            moneyAmount,
+            workingPeriod,
+            isFreeWeekends,
+            restrictions
+        };
+        const object = await getAnswer(JSON.stringify(data), user?.id ?? '');
+        console.log(object);
+        // setGeneration(text);
         setLoading(false);
     };
 
@@ -341,7 +350,7 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
 
                             <button
                                 className='w-full h-auto bg-black rounded-md text-white font-semibold text-sm leading-5 flex flex-row items-center justify-center px-3 py-1.5'
-                                onClick={handleSendData}
+                                onClick={handleGenerateTasks}
                                 disabled={loading}
                             >
                                 {loading ? (

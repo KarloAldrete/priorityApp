@@ -1,38 +1,56 @@
 'use server';
 import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { generateObject, generateText } from 'ai';
+import { z } from 'zod';
 
-export async function getAnswer(question: string) {
+export async function getAnswer(description: string, user: string) {
+    console.log(description);
 
-    const { text, finishReason, usage } = await generateText({
-        model: google('models/gemini-1.0-pro-001'),
-        system:
-            'Estoy desarrollando un proyecto de desarrollo de software/IT y necesito tu ayuda para generar una lista detallada de tareas necesarias para completarlo con éxito, así como un diagrama de flujo que represente el proceso. ' +
-            'Aquí están los detalles del proyecto: ' +
-            'Descripción del Proyecto: ' +
-            'Pagina web donde los clientes puedan encargar pedidos de comida de un local de comida con un alcance municipal para pedir comida para llevar o a domicilio. Pagando con tarjeta de crédito o debito,  o en efectivo en el mismo local. ' +
-            'Tecnologías a Utilizar: ' +
-            'NextJs ' +
-            'Tailwind ' +
-            'Supabase ' +
-            'Plazos: ' +
-            'Fecha de inicio del proyecto: 19/07/2024 ' +
-            'Fecha de entrega del proyecto: 19/09/2024 ' +
-            'Recursos Disponibles: ' +
-            'Equipo de personas:  1 programador jr con 3 meses experiencia. ' +
-            'Restricciones: ' +
-            'No se debe exceder la fecha de entrega. ' +
-            'Con esta información, por favor, genera una lista detallada de tareas necesarias para completar el proyecto y un diagrama de flujo que represente el proceso. ' +
-            'La estructura de la respuesta debe incluir los siguientes campos: ' +
-            '**Título:** [título del proyecto] ' +
-            '**Descripción:** [descripción general] ' +
-            '**Estimación:** [horas] ' +
-            '**Tareas:** las tareas en orden de lista ' +
-            '**Diagrama de Flujo:** [diagrama de flujo] ',
-        prompt: question,
+    let response;
+    let cotizacion;
+
+    const projectData = JSON.parse(description);
+
+    try {
+        response = await generateObject({
+            model: google('models/gemini-1.5-pro-latest'),
+            mode: 'auto',
+            schema: z.object({
+                tareas: z.array(z.object({
+                    nombre: z.string(),
+                    descripcion: z.string(),
+                    tecnologias: z.string(),
+                    'Tiempo de desarrollo': z.string(),
+                })),
+            }),
+            prompt: `${description}, el tiempo estimado debe ser tomado en base al seniority del programador, el cual es promedio o semi-senior, con una jornada laboral de ${projectData.workingPeriod} horas, en cada una de las fases, divídelas en pasos más pequeños y específicos.`,
+        });
+    } catch (error) {
+        console.error('Error al generar el objeto:', error);
+        throw new Error('Error al generar el objeto');
+    }
+
+    try {
+        cotizacion = await generateText({
+            model: google('models/gemini-1.5-pro-latest'),
+            system: `En base a la informacion recabada debes comportarte como Product Designer para cotizar proyectos de desarrollo de software, ten en cuenta que el programador cobra por ${projectData.payRoll} la cantidad de ${projectData.moneyAmount}. Cuando menciones los pasos de desarrollo no digas cuanto cuesta esa fase, mejor al final da un costo total estimado`,
+            prompt: JSON.stringify(response.object)
+        });
+    } catch (error) {
+        console.error('Error al generar la cotización:', error);
+        throw new Error('Error al generar la cotización');
+    }
+
+    console.log(cotizacion.text);
+
+    await fetch('http://localhost:3000/api/creation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title: projectData.projectName, data: response.object, user: user })
     });
 
-    console.log(text);
-
-    return { text, finishReason, usage }
+    const { object } = response;
+    return object;
 };

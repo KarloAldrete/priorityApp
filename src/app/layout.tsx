@@ -30,7 +30,7 @@ export default function RootLayout({
 
             <header className='w-full flex flex-row justify-end items-center p-2'>
               <SignedOut>
-                <SignInButton mode='modal'/>
+                <SignInButton mode='modal' />
               </SignedOut>
               <SignedIn>
                 <UserButton />
@@ -45,6 +45,5 @@ export default function RootLayout({
       </body>
 
     </html>
-
   );
 }
