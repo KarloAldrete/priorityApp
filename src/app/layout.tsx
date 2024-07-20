@@ -28,14 +28,14 @@ export default function RootLayout({
         <div className='w-full h-full font-geist rounded-xl bg-white       flex flex-col gap-4'>
           <ClerkProvider>
 
-            <header className='w-full flex flex-row justify-end items-center p-2'>
+            {/* <header className='w-full flex flex-row justify-end items-center p-2'>
               <SignedOut>
                 <SignInButton mode='modal' />
               </SignedOut>
               <SignedIn>
                 <UserButton />
               </SignedIn>
-            </header>
+            </header> */}
 
             {children}
 

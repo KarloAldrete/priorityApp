@@ -108,7 +108,29 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
         console.log(`Periodo de trabajo: ${workingPeriod} hrs ⏰`);
         console.log(`Fines de semana libres: ${isFreeWeekends ? 'Sí' : 'No'} 🌞`);
         console.log(`Restricciones: ${restrictions} 🚫`);
-    }
+    };
+
+    useEffect(() => {
+        if (visible) {
+            setProjectName("BLife");
+            setDescription("necesito crear una plataforma para un cliente que vende jabones, shampoos, pastas de dientes, cremas y demas hechos a base de productos naturales, quiere poder vender en linea, que los clientes puedan ver los productos, agregarlos al carrito, pagarlos y despues verificar la paqueteria para saber donde viene el paquete.");
+            setTags([
+                { id: '1', text: "NextJS" },
+                { id: '2', text: "Supabase" },
+                { id: '3', text: "Clerk" },
+                { id: '4', text: "TailwindCSS" },
+                { id: '5', text: "Stripe" },
+                { id: '6', text: "Vercel" },
+                { id: '7', text: "Figma" }
+            ]);
+            setTeamSize(1);
+            setPayRoll("hora");
+            setMoneyAmount(25);
+            setWorkingPeriod(8);
+            setFreeWeekends(false);
+            setRestrictions("");
+        }
+    }, [visible]);
 
     return (
         <>

@@ -3,7 +3,6 @@ import { currentUser } from '@clerk/nextjs/server';
 
 export default async function Page() {
   const user = await currentUser();
-  console.log(user?.id);
 
   return (
     <div className='w-full flex flex-col items-center justify-center'>
