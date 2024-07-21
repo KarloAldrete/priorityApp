@@ -1,7 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
 import { currentUser } from '@clerk/nextjs/server';
-import { IconGymnastics } from '@tabler/icons-react';
-import Link from 'next/link';
 
 
 export default async function Home() {
@@ -11,7 +9,7 @@ export default async function Home() {
     const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('owner', user?.id)
+        .eq('owner', user?.id);
 
     return (
         <div className='w-full h-full flex flex-col items-start justify-start gap-5'>
@@ -85,7 +83,7 @@ export default async function Home() {
 
                                 <div className='w-[1px] h-3 border border-[#D4E0F1]' />
 
-                                <Link href={`/dashboard/${project.title}`} className='w-full flex items-center justify-center text-xs leading-5 font-medium text-[#64748B] hover:text-black'>Detalles</Link>
+                                <a href={`/dashboard/${project.title}`} className='w-full flex items-center justify-center text-xs leading-5 font-medium text-[#64748B] hover:text-black'>Detalles</a>
 
                             </div>
 

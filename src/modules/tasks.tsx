@@ -1,3 +1,4 @@
+'use client';
 import { IconArrowNarrowLeft, IconArrowNarrowRight, IconCalendarExclamation, IconCircleDashed, IconClock, IconDotsVertical, IconFileTextAi, IconFocus, IconTag, IconTrash, IconUsers, IconUsersPlus } from '@tabler/icons-react';
 import { useCallback, useEffect, useState } from 'react';
 

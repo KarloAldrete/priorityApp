@@ -4,8 +4,8 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import Sidebar from "@/components/sidebar";
-import { ProjectProvider } from '@/context/projectContext';
 import { Toaster } from 'sonner'
+import { Suspense } from 'react';
 
 export default function RootLayout({
     children,
@@ -13,25 +13,25 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <ProjectProvider>
+        <div className='w-full h-full font-geist p-3'>
             <Toaster />
-            <div className='w-full h-full font-geist p-3'>
 
-                <div className='w-full h-full font-geist p-8 rounded-xl bg-[#ECECEF] bg-[radial-gradient(#B4B4B6_1px,transparent_1px)] bg-[size:12px_12px] text-[color:var(--foreground)] border border-[#E8E6EF]'>
+            <div className='w-full h-full font-geist p-8 rounded-xl bg-[#ECECEF] bg-[radial-gradient(#B4B4B6_1px,transparent_1px)] bg-[size:12px_12px] text-[color:var(--foreground)] border border-[#E8E6EF]'>
 
-                    <ResizablePanelGroup direction="horizontal" className='rounded-xl w-auto h-auto'>
+                <ResizablePanelGroup direction="horizontal" className='rounded-xl w-auto h-auto'>
 
+                    <Suspense fallback={<div>Loading...</div>}>
                         <Sidebar />
+                    </Suspense>
 
-                        <ResizablePanel defaultSize={85} className='w-full h-full flex flex-col items-center justify-center bg-white rounded-xl ml-4 border border-[#E8E6EF]'>
-                            {children}
-                        </ResizablePanel>
+                    <ResizablePanel defaultSize={85} className='w-full h-full flex flex-col items-center justify-center bg-white rounded-xl ml-4 border border-[#E8E6EF]'>
+                        {children}
+                    </ResizablePanel>
 
-                    </ResizablePanelGroup>
-
-                </div>
+                </ResizablePanelGroup>
 
             </div>
-        </ProjectProvider>
+
+        </div>
     );
 }

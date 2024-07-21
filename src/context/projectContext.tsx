@@ -1,41 +1,19 @@
-'use client';
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+// 'use server';
+// import { cookies } from 'next/headers';
 
-interface ProjectContextType {
-    selectedProject: string | null;
-    setSelectedProject: (project: string) => void;
-}
+// export interface ProjectContextType {
+//     selectedProject: string | null;
+//     title: string;
+// };
 
-const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
+// export const getSelectedProject = (): ProjectContextType => {
+//     const cookieStore = cookies();
+//     const pathname = cookieStore.get('current-path')?.value || '/';
+//     const selectedProject = pathname.split('/')[2] || '/';
+//     const title = selectedProject === '/' ? 'Home' : 'Project';
 
-export const ProjectProvider = ({ children }: { children: ReactNode }) => {
-    const [selectedProject, setSelectedProject] = useState<string | null>(null);
-    const pathname = usePathname();
+//     console.log(selectedProject);
+//     return { selectedProject, title };
+// };
 
-    useEffect(() => {
-        if (!selectedProject) {
-            const path = pathname.split('/')[2] || '/';
-            setSelectedProject(path);
-        }
-    }, [pathname, selectedProject]);
-
-    useEffect(() => {
-        const path = pathname.split('/')[2] || '/';
-        setSelectedProject(path);
-    }, [pathname]);
-
-    return (
-        <ProjectContext.Provider value={{ selectedProject, setSelectedProject }}>
-            {children}
-        </ProjectContext.Provider>
-    );
-};
-
-export const useProject = () => {
-    const context = useContext(ProjectContext);
-    if (!context) {
-        throw new Error('useProject must be used within a ProjectProvider');
-    }
-    return context;
-};
+// export default getSelectedProject;
