@@ -1,34 +1,37 @@
 'use client';
 import { IconArrowNarrowLeft, IconArrowNarrowRight, IconCalendarExclamation, IconCircleDashed, IconClock, IconDotsVertical, IconFileTextAi, IconFocus, IconTag, IconTrash, IconUsers, IconUsersPlus } from '@tabler/icons-react';
 import { useCallback, useEffect, useState } from 'react';
+import { useProjectStore } from '@/store/useStore';
 
 interface Subtarea {
     descripcion: string;
     completed: boolean;
-};
+}
 
 interface Tarea {
     nombre: string;
     descripcion: string;
     'Tiempo de desarrollo': string;
     subtareas: Subtarea[];
-};
+}
 
 interface ProjectData {
     id: number;
     owner: string;
     title: string;
+    icon?: string;
     data: {
         tareas: Tarea[];
     };
-};
+}
 
 interface TasksProps {
-    projectData: ProjectData[];
+    projectData: Tarea[];
     setActiveMenuTab: (tab: string) => void;
-};
+}
 
-export function Tasks({ projectData, setActiveMenuTab }: TasksProps) {
+const Tasks: React.FC<TasksProps> = ({ projectData, setActiveMenuTab }) => {
+    const { selectedProject } = useProjectStore();
     const [selectedTarea, setSelectedTarea] = useState<Tarea | null>(null);
     const [projectStatus, setProjectStatus] = useState('Pendiente');
     const [projectLimitDate, setProjectLimitDate] = useState('20 de Julio del 2024');
@@ -55,45 +58,42 @@ export function Tasks({ projectData, setActiveMenuTab }: TasksProps) {
     const totalSubtareas = selectedTarea?.subtareas?.length || 0;
 
     useEffect(() => {
-        setSelectedTarea(projectData[0]?.data.tareas[0] || null);
-    }, [projectData]);
+        if (selectedProject) {
+            setSelectedTarea(selectedProject.data.tareas[0] || null);
+        }
+    }, [selectedProject]);
 
     return (
         <>
             <div className='w-2/3 rounded-ss-xl h-auto flex flex-col items-start justify-start gap-5'>
-
                 <div className='w-full h-auto flex flex-row items-center justify-between border-b border-[#E8E6EF] px-5 py-3'>
-
                     <div className='flex flex-row items-center gap-1'>
                         <IconFileTextAi size={20} stroke={2} />
                         <h2 className='text-xl font-semibold'>Tareas sugeridas</h2>
                     </div>
-
                     <button className='bg-black w-auto h-auto flex items-center justify-center px-3 py-1 rounded-md text-sm leading-5 text-white font-medium' onClick={handleTabChange}>Regresar</button>
-
                 </div>
 
-                {projectData.map(project => (
-                    <div key={project.id} className='w-full h-auto flex flex-col gap-4 px-5'>
-                        {project.data.tareas.map((tarea, index) => (
-                            <div
-                                key={index}
-                                className={`w-full h-auto px-3 py-2.5 border border-[#E4E4E7] rounded-md flex flex-col gap-2 ${selectedTarea === tarea ? 'bg-[#F4F4F5] cursor-default' : 'cursor-pointer hover:bg-[#F4F4F5]'}`}
-                                onClick={() => handleTareaClick(tarea)}
-                            >
-                                <div className='w-full h-auto flex flex-row items-center justify-between'>
-                                    <h3 className='font-medium text-sm leading-5 text-[#09090B]'>{tarea.nombre}</h3>
-                                    <div className='w-auto h-auto flex flex-row items-center justify-end gap-1'>
-                                        <IconClock size={16} stroke={2} color='#71717A' />
-                                        <span className='text-sm text-[#71717A] leading-5 font-medium'>{tarea['Tiempo de desarrollo']}</span>
-                                    </div>
-                                </div>
-                                <p className='text-sm text-[#71717A] leading-5 font-normal'>{tarea.descripcion}</p>
-                            </div>
-                        ))}
-                    </div>
-                ))}
+                <div className='w-full h-full flex flex-col items-start justify-start gap-4 px-5'>
 
+                    {selectedProject && selectedProject.data.tareas.map((tarea, index) => (
+                        <div
+                            key={index}
+                            className={`w-full h-auto px-3 py-2.5 border border-[#E4E4E7] rounded-md flex flex-col gap-2 ${selectedTarea === tarea ? 'bg-[#F4F4F5] cursor-default' : 'cursor-pointer hover:bg-[#F4F4F5]'}`}
+                            onClick={() => handleTareaClick(tarea)}
+                        >
+                            <div className='w-full h-auto flex flex-row items-center justify-between'>
+                                <h3 className='font-medium text-sm leading-5 text-[#09090B]'>{tarea.nombre}</h3>
+                                <div className='w-auto h-auto flex flex-row items-center justify-end gap-1'>
+                                    <IconClock size={16} stroke={2} color='#71717A' />
+                                    <span className='text-sm text-[#71717A] leading-5 font-medium'>{tarea['Tiempo de desarrollo']}</span>
+                                </div>
+                            </div>
+                            <p className='text-sm text-[#71717A] leading-5 font-normal'>{tarea.descripcion}</p>
+                        </div>
+                    ))}
+
+                </div>
             </div>
 
             <div className='w-1/3 h-full flex flex-col items-start justify-start rounded-r-xl border-l border-[#E8E6EF]'>
@@ -176,7 +176,11 @@ export function Tasks({ projectData, setActiveMenuTab }: TasksProps) {
                                         selectedTarea.subtareas.map((subtarea, index) => (
                                             <div key={index} className='w-full h-auto flex flex-row items-center justify-between gap-2 px-3 py-2.5 border border-[#E4E4E7] rounded-md'>
                                                 <div className='flex items-center'>
-                                                    <input type='checkbox' checked={subtarea.completed} onChange={() => handleSubtareaToggle(index)} />
+                                                    <input
+                                                        type='checkbox'
+                                                        checked={subtarea.completed || false} // Aseguramos que siempre tenga un valor booleano
+                                                        onChange={() => handleSubtareaToggle(index)}
+                                                    />
                                                     <h3 className='font-medium text-sm leading-5 text-[#09090B] ml-2'>{subtarea.descripcion}</h3>
                                                 </div>
                                             </div>
@@ -188,13 +192,11 @@ export function Tasks({ projectData, setActiveMenuTab }: TasksProps) {
                             )}
                             {activeTab === 'comentarios' && (
                                 <div className='w-full'>
-                                    {/* Aquí puedes agregar el contenido de la pestaña de comentarios */}
                                     <p>Comentarios</p>
                                 </div>
                             )}
                             {activeTab === 'actividades' && (
                                 <div className='w-full'>
-                                    {/* Aquí puedes agregar el contenido de la pestaña de actividades */}
                                     <p>Actividades</p>
                                 </div>
                             )}
@@ -205,3 +207,5 @@ export function Tasks({ projectData, setActiveMenuTab }: TasksProps) {
         </>
     )
 }
+
+export default Tasks;

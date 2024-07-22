@@ -18,11 +18,9 @@ export default function RootLayout({
 
             <div className='w-full h-full font-geist p-8 rounded-xl bg-[#ECECEF] bg-[radial-gradient(#B4B4B6_1px,transparent_1px)] bg-[size:12px_12px] text-[color:var(--foreground)] border border-[#E8E6EF]'>
 
-                <ResizablePanelGroup direction="horizontal" className='rounded-xl w-auto h-auto'>
+                <ResizablePanelGroup direction="horizontal" className='rounded-xl w-full h-auto'>
 
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <Sidebar />
-                    </Suspense>
+                    <Sidebar />
 
                     <ResizablePanel defaultSize={85} className='w-full h-full flex flex-col items-center justify-center bg-white rounded-xl ml-4 border border-[#E8E6EF]'>
                         {children}

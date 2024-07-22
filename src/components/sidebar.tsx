@@ -1,74 +1,144 @@
-// import { useState, useEffect } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
-import { IconLayoutDashboard, IconLogout, IconSparkles } from '@tabler/icons-react';
-// import { TasksModal } from '@/components/generateTasksModal';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cookies } from 'next/headers';
-import TooltipItem from '@/components/coderlabs/tooltips';
-import AtomizedSidebar from '@/components/atomizedSidebar';
+import { IconDashboard, IconLogout, IconSparkles } from '@tabler/icons-react';
+import { TasksModal } from '@/components/generateTasksModal';
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useUser } from '@clerk/nextjs';
+import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+import LogoSection from '@/components/coderlabs/LogoSection';
+import SidebarItem from '@/components/coderlabs/SidebarItem';
+import { useProjectStore } from '@/store/useStore';
 
-interface Project {
+interface Subtarea {
+    descripcion: string;
+    completed: boolean;
+};
+
+interface Tarea {
+    nombre: string;
+    descripcion: string;
+    'Tiempo de desarrollo': string;
+    subtareas: Subtarea[];
+};
+
+interface ProjectData {
+    id: number;
+    owner: string;
     title: string;
-    icon: string;
+    icon?: string;
+    data: {
+        tareas: Tarea[];
+    };
 };
 
-interface ProjectContextType {
-    selectedProject: string | null;
-    title: string;
-};
+export default function Sidebar() {
+    const { user } = useUser();
+    const router = useRouter();
+    const { projects, setProjects, selectProject, selectedProject, isSidebarCollapsed, setSidebarCollapsed } = useProjectStore();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const isCollapsed = useProjectStore(state => state.isSidebarCollapsed);
+    const setCollapsed = useProjectStore(state => state.setSidebarCollapsed);
 
-async function getSelectedProject() {
-    const cookieStore = cookies();
-    const pathname = cookieStore.get('current-path')?.value || '/';
-    const userId = cookieStore.get('user-id')?.value;
+    useEffect(() => {
+        if (!user) return;
 
-    const res = await fetch('/api/path', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            userId: userId,
-            pathname: pathname,
-        }),
-        cache: 'no-store'
-    });
+        const fetchData = async () => {
+            const supabase = await createClient();
 
-    const projects = await res.json();
-    return projects;
-};
+            const { data, error } = await supabase
+                .from('projects')
+                .select('id, owner, title, icon, data')
+                .eq('owner', user.id);
 
-export default async function Sidebar() {
-    const selectedProject = await getSelectedProject();
+            if (data) {
+                setProjects(data as ProjectData[]);
+                console.log(data);
 
-    // const [isCollapsed, setIsCollapsed] = useState(true);
-    // const [isModalVisible, setIsModalVisible] = useState(false);
-    // const [projects, setProjects] = useState<Project[]>([]);
+                const pathname = window.location.pathname;
+                const projectTitle = pathname.split('/dashboard/')[1];
+                const selectedProject = data.find((project: ProjectData) => project.title === projectTitle);
+                if (selectedProject) {
+                    selectProject(selectedProject);
+                }
+            }
 
-    // function handleCollapse() {
-    //     // setIsCollapsed(!isCollapsed);
-    //     console.log('collapse');
-    // };
+            if (error) {
+                console.error(error);
+            }
+        };
 
-    // function handleIconClick() {
-    //     // setIsModalVisible(true);
-    // };
+        fetchData();
+    }, [user, setProjects, selectProject]);
 
-    // function handleProjectClick(projectTitle: string) {
-    //     // setSelectedProject(projectTitle);
-    //     // router.push(`/dashboard/${projectTitle}`);
-    // }
+    function handleCollapse() {
+        setCollapsed(!isCollapsed);
+    }
 
-    if (!selectedProject) {
-        return null;
+    function handleIconClick() {
+        setIsModalVisible(true);
+    }
+
+    function handleProjectClick(projectTitle: string) {
+        const project = projects.find(p => p.title === projectTitle);
+        if (project) {
+            selectProject(project);
+            router.push(`/dashboard/${projectTitle}`);
+        } else {
+            console.error(`Project with title ${projectTitle} not found`);
+        }
     }
 
     return (
-        <AtomizedSidebar />
+        <>
+            <ResizablePanel onCollapse={handleCollapse} onExpand={handleCollapse} collapsible={true} minSize={15} defaultSize={15} maxSize={15} className='w-full h-auto min-w-[62px] rounded-xl font-geist'>
+                <TooltipProvider delayDuration={50}>
+                    <div className='rounded-xl bg-white w-full h-full flex flex-col items-start justify-between px-3 py-3 border border-[#E8E6EF]'>
+                        <div className='w-full h-auto flex flex-col items-start justify-start gap-2.5'>
+                            <LogoSection isCollapsed={isCollapsed} />
+                            <SidebarItem
+                                key="dashboard"
+                                icon={<IconDashboard size={20} stroke={1.75} />}
+                                label="Dashboard"
+                                projectTitle="Dashboard"
+                                isCollapsed={isCollapsed}
+                                isSelected={selectedProject?.title === 'Dashboard'}
+                                onClick={() => handleProjectClick('/')}
+                                path="/dashboard"
+                            />
+                            <SidebarItem
+                                key="newProject"
+                                icon={<IconSparkles size={20} stroke={1.75} />}
+                                label="Nuevo Proyecto"
+                                isCollapsed={isCollapsed}
+                                onClick={handleIconClick}
+                            />
+                            <div className='w-full h-[1px] border-b border-[#E4E4E7]' />
+                            {projects.map(project => (
+                                <SidebarItem
+                                    key={project.title}
+                                    icon={<span className='w-5 h-5' style={{ transform: 'translateY(-2px) translateX(-.5px)' }}>{project.icon}</span>}
+                                    label={project.title}
+                                    projectTitle={project.title}
+                                    isCollapsed={isCollapsed}
+                                    isSelected={selectedProject?.title === project.title}
+                                    onClick={() => handleProjectClick(project.title)}
+                                />
+                            ))}
+                        </div>
+                        <SidebarItem
+                            icon={<IconLogout size={20} stroke={1.75} />}
+                            label="Cerrar Sesión"
+                            isCollapsed={isCollapsed}
+                            onClick={handleIconClick}
+                            hoverColor="#CE4444"
+                        />
+                    </div>
+                </TooltipProvider>
+            </ResizablePanel>
+            <ResizableHandle withHandle className='custom-handle' />
+            <TasksModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} />
+        </>
     );
 }
