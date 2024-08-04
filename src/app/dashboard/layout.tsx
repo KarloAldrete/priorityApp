@@ -5,7 +5,6 @@ import {
 } from "@/components/ui/resizable"
 import Sidebar from "@/components/sidebar";
 import { Toaster } from 'sonner'
-import { Suspense } from 'react';
 
 export default function RootLayout({
     children,
@@ -16,7 +15,7 @@ export default function RootLayout({
         <div className='w-full h-full font-geist p-3'>
             <Toaster />
 
-            <div className='w-full h-full font-geist p-8 rounded-xl bg-[#ECECEF] bg-[radial-gradient(#B4B4B6_1px,transparent_1px)] bg-[size:12px_12px] text-[color:var(--foreground)] border border-[#E8E6EF]'>
+            <div className='w-full h-full font-geist p-8 rounded-xl bg-[#F1F5F9] bg-[radial-gradient(#B4B4B6_1px,transparent_1px)] bg-[size:12px_12px] text-[#64748B] border border-[#E8E6EF]'>
 
                 <ResizablePanelGroup direction="horizontal" className='rounded-xl w-full h-auto'>
 

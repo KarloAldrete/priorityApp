@@ -1,46 +1,44 @@
 'use client';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useProjectStore } from '@/store/useStore';
+import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface SidebarItemProps {
     icon: React.ReactNode;
     label: string;
     projectTitle?: string;
-    isCollapsed: boolean;
-    isSelected?: boolean;
     onClick?: () => void;
     hoverColor?: string;
     path?: string;
-}
+};
 
-export default function SidebarItem({ icon, label, projectTitle, isCollapsed, isSelected, onClick, hoverColor = 'black', path }: SidebarItemProps) {
-    const { selectProject, projects, selectedProject } = useProjectStore();
+const SidebarItem = React.memo(({ icon, label, projectTitle, onClick, hoverColor = 'black', path }: SidebarItemProps) => {
+    const router = useRouter();
+    const isCollapsed = useSidebarStore(state => state.isCollapsed);
+    const selectedProject = useSidebarStore(state => state.selectedProject);
 
     const handleClick = () => {
-        if (projectTitle) {
-            const project = projects.find(p => p.title === projectTitle);
-            if (project) {
-                selectProject(project);
-            }
-        }
-        if (path) {
-            window.location.href = path;
-        }
         if (onClick) {
             onClick();
         }
+        if (path) {
+            router.push(path);
+        }
     };
 
-    const isItemSelected = selectedProject?.title === projectTitle;
+    const isSelected = selectedProject?.title === projectTitle;
 
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <div
-                    className={`w-full min-h-9 max-w-[300px] flex flex-row items-center justify-start hover:bg-black gap-2 p-2 rounded-md text-black ${isItemSelected ? 'bg-black text-white' : `hover:bg-${hoverColor} hover:text-white`} ease-in-out duration-200 cursor-pointer`}
+                    className={`w-full min-h-9 flex ${isCollapsed ? 'bg-[#F1F5F9] group-hover:text-white' : ''} flex-row ${isSelected ? 'bg-black text-white cursor-default' : 'hover:bg-black cursor-pointer hover:text-white'} items-center justify-start gap-2 p-2 rounded-md text-black`}
                     onClick={handleClick}
                 >
-                    {icon}
+                    <div className={`w-auto h-auto ${isCollapsed ? 'text-[#64748B]' : ''}`}>
+                        {icon}
+                    </div>
                     {!isCollapsed &&
                         <span className='text-sm leading-5 font-medium'>{label}</span>
                     }
@@ -53,4 +51,8 @@ export default function SidebarItem({ icon, label, projectTitle, isCollapsed, is
             )}
         </Tooltip>
     );
-}
+});
+
+SidebarItem.displayName = 'SidebarItem';
+
+export default SidebarItem;

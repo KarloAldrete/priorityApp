@@ -135,7 +135,7 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
     return (
         <>
             {visible &&
-                <div className='w-screen h-screen bg-slate-500 absolute top-0 left-0 bg-opacity-50 flex items-center justify-center'>
+                <div className='w-screen h-screen bg-slate-500 absolute top-0 left-0 bg-opacity-50 flex items-center justify-center z-[100]'>
 
                     <div className='w-full max-w-[600px] h-auto bg-white border border-[#E8E6EF] rounded-md pt-4 flex flex-col items-start justify-start font-geist'>
 
@@ -211,47 +211,6 @@ export function TasksModal({ isVisible, setIsVisible }: { isVisible: boolean, se
                                         )}
                                     />
                                 </Form>
-
-                                <div className='w-full h-auto flex flex-row items-end justify-start gap-4'>
-
-                                    <div className='w-auto h-auto flex flex-col items-start justify-start gap-1.5'>
-
-                                        <span className='font-geist font-semibold text-base leading-5'>Personas en el equipo</span>
-
-                                        <Select onValueChange={setTeamSize} value={teamSize}>
-                                            <SelectTrigger className="w-[180px] h-9">
-                                                <SelectValue placeholder="0" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value={0}>0</SelectItem>
-                                                <SelectItem value={1}>1</SelectItem>
-                                                <SelectItem value={2}>2</SelectItem>
-                                                <SelectItem value={3}>3</SelectItem>
-                                                <SelectItem value={4}>4</SelectItem>
-                                                <SelectItem value={5}>5</SelectItem>
-                                                <SelectItem value={6}>6</SelectItem>
-                                                <SelectItem value={7}>7</SelectItem>
-                                                <SelectItem value={8}>8</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-
-                                    </div>
-
-                                    <div className='w-auto flex flex-col items-center justify-center gap-2'>
-                                        <button className='bg-black text-white px-3 py-2.5 rounded-md h-9 flex items-center justify-center text-sm leading-5 font-medium gap-2'>
-                                            <IconUser size={18} stroke={2} />
-                                            <span className='text-white text-sm leading-5 font-medium'>Definir roles</span>
-                                        </button>
-                                    </div>
-
-                                    <div className='w-auto flex flex-col items-center justify-center gap-2'>
-                                        <button className='bg-white border border-dashed border-[#E8E6EF] px-3 py-2.5 rounded-md h-9 flex items-center justify-center text-sm leading-5 font-medium gap-2'>
-                                            <IconCalendarPlus size={18} stroke={2} />
-                                            <span className='text-black text-sm leading-5 font-medium'>Fecha de entrega</span>
-                                        </button>
-                                    </div>
-
-                                </div>
 
                                 <div className='w-full h-auto flex flex-row items-center justify-start gap-4'>
 

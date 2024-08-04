@@ -25,7 +25,7 @@ export default function RootLayout({
 
       <body className='min-w-screen min-h-screen w-screen h-screen font-geist'>
 
-        <div className='w-full h-full font-geist rounded-xl bg-white       flex flex-col gap-4'>
+        <div className='w-full h-full font-geist rounded-xl bg-white flex flex-col gap-4'>
           <ClerkProvider>
 
             {/* <header className='w-full flex flex-row justify-end items-center p-2'>

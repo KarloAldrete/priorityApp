@@ -1,15 +1,11 @@
-import { createClient } from '@/utils/supabase/client';
-import { currentUser } from '@clerk/nextjs/server';
+'use client';
+import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { useRouter } from 'next/navigation';
 
 
-export default async function Home() {
-    const user = await currentUser();
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('owner', user?.id);
+export default function Home() {
+    const router = useRouter();
+    const data = useSidebarStore(state => state.projects);
 
     return (
         <div className='w-full h-full flex flex-col items-start justify-start gap-5'>
@@ -83,7 +79,7 @@ export default async function Home() {
 
                                 <div className='w-[1px] h-3 border border-[#D4E0F1]' />
 
-                                <a href={`/dashboard/${project.title}`} className='w-full flex items-center justify-center text-xs leading-5 font-medium text-[#64748B] hover:text-black'>Detalles</a>
+                                <div onClick={() => router.push(`/dashboard/${project.title}`)} className='w-full cursor-pointer flex items-center justify-center text-xs leading-5 font-medium text-[#64748B] hover:text-black'>Detalles</div>
 
                             </div>
 

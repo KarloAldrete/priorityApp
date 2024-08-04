@@ -1,6 +1,6 @@
 'use server';
 import { google } from '@ai-sdk/google';
-import { generateObject, generateText } from 'ai';
+import { generateObject } from 'ai';
 import { z } from 'zod';
 
 export async function getAnswer(description: string, user: string) {
@@ -19,14 +19,27 @@ export async function getAnswer(description: string, user: string) {
                 tareas: z.array(z.object({
                     nombre: z.string(),
                     descripcion: z.string(),
-                    // tecnologias: z.string(),
                     subtareas: z.array(z.object({
                         descripcion: z.string(),
                     })),
+                    etapa: z.string(),
+                    estado: z.string(),
                     'Tiempo de desarrollo': z.string(),
                 }))
             }),
-            prompt: `${description}, el tiempo estimado debe ser tomado en base al seniority del programador, el cual es promedio o semi-senior, con una jornada laboral de ${projectData.workingPeriod} horas, en cada una de las fases, divídelas en pasos más pequeños y específicos. Las subtareas deben ser especificas a cada tarea en esa misma tarea.`,
+            prompt:
+                `Description: ${description}\n` +
+                `We need a list of tasks with specific and creative names that do not simply repeat the stage name. ` +
+                `For example, we do not want "Planning - Planning". ` +
+                `The development time should be based on the daily working period (${projectData.workingPeriod} hours), and the payment information (${projectData.payRoll}) will determine if it is expressed in hours or days. ` +
+                `If in hours, the development time should be in working hours; if in days, it should be in days. ` +
+                `Divide each phase into smaller, detailed steps, ensuring that subtasks are specific to each task within that task. ` +
+                `The stages should be specific to each development area, such as: Planning, Design, Development, Testing, Deployment. ` +
+                `Create as many tasks as possible, specifically and in chronological order, based on the experience of senior programmers on the internet to determine the appropriate organization for the project. ` +
+                `Use clear and precise language to describe each task and subtask. ` +
+                `All tasks should start with the status "Pending". ` +
+                `Additionally, consider the technologies specified in projectData.tags to influence the tasks and create more specific subtasks.\n` +
+                `Respond in Spanish.`,
         });
     } catch (error) {
         console.error('Error al generar el objeto:', error);
