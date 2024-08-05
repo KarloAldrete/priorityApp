@@ -22,6 +22,10 @@ export interface Subtarea {
     descripcion: string;
     completed: boolean;
     estado: string;
+    'Tiempo de desarrollo': string;
+    actividades: Actividad[];
+    comentarios: Comentario[];
+    tareas: Subtarea[];
 }
 
 export interface Tarea {
@@ -164,7 +168,14 @@ export const useSidebarStore = create<SidebarStore>()(
                         const selectedProject = get().selectedProject;
                         if (!selectedProject) return [];
                         return selectedProject.data.fases.flatMap(fase =>
-                            fase.tareas.map(tarea => ({ ...tarea, etapa: fase.etapa }))
+                            fase.tareas.map(tarea => ({
+                                ...tarea,
+                                etapa: fase.etapa,
+                                'Tiempo de desarrollo': tarea['Tiempo de desarrollo'] || '',
+                                actividades: tarea.actividades || [],
+                                comentarios: tarea.comentarios || [],
+                                tareas: tarea.tareas || []
+                            }))
                         );
                     },
                 })
