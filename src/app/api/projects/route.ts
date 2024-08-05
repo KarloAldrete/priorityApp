@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('owner', body.owner)
-        .eq('title', body.title);
+        .eq('owner', body.owner);
 
     if (error) {
         console.error(error);

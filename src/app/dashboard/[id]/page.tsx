@@ -1,104 +1,131 @@
 'use client';
-import { IconArrowNarrowLeft, IconArrowNarrowRight, IconCalendarExclamation, IconCircleDashed, IconClock, IconDotsVertical, IconFileTextAi, IconFocus, IconTag, IconTrash, IconUsers, IconUsersPlus } from '@tabler/icons-react';
-import { useCallback, useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { useProject } from '@/context/projectContext';
-import { Tasks } from '@/modules/tasks';
+import Tasks from '@/modules/tasks';
+import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { Diagrama } from '@/components/diagrama';
+import { useTasksStore } from '@/stores/tasks/tasks.store';
+import { IconCircuitPushbutton, IconLayoutKanban } from '@tabler/icons-react';
+import { Kanban } from '@/modules/kanban';
 
-interface Subtarea {
-    descripcion: string;
-    completed: boolean;
-};
+const DashboardPage = () => {
+    const getSelectedProjectTasks = useSidebarStore(state => state.getSelectedProjectTasks);
+    const selectedProject = useSidebarStore(state => state.selectedProject);
+    const { activeMenuTab, setActiveMenuTab } = useTasksStore(state => state);
+    const tasks = getSelectedProjectTasks();
 
-interface Tarea {
-    nombre: string;
-    descripcion: string;
-    'Tiempo de desarrollo': string;
-    subtareas: Subtarea[];
-};
-
-interface ProjectData {
-    id: number;
-    owner: string;
-    title: string;
-    data: {
-        tareas: Tarea[];
-    };
-};
-
-
-export default function Home() {
-    const { user } = useUser();
-    const [projectData, setProjectData] = useState<ProjectData[]>([]);
-    const { selectedProject, setSelectedProject } = useProject();
-    const [activeMenuTab, setActiveMenuTab] = useState('General');
-
-    const fetchData = useCallback(async () => {
-        if (user == undefined) return;
-        if (!selectedProject) return;
-        const response = await fetch('/api/projects', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: selectedProject,
-                owner: user.id,
-            }),
-            cache: 'force-cache'
-        });
-
-        const result = await response.json();
-
-        if (result.status === 200) {
-            setProjectData(result.data);
-        } else {
-            console.error(result.error);
-        }
-    }, [user, selectedProject]);
-
-    useEffect(() => {
-        if (user !== undefined) {
-            fetchData();
-        }
-    }, [fetchData, user]);
-
-    if (user == undefined) {
-        console.log('sin usuario')
-        return <div className='flex items-center justify-center w-full h-full'>
-            <span className='text-lg font-medium'>Cargando usuario...</span>
-        </div>
-    };
+    const tabs = useTasksStore(state => state.menuTabs);
 
     return (
         <div className='w-full h-full flex flex-row items-start justify-start'>
-
             {activeMenuTab == 'General' &&
                 <>
-                    <div className='w-full h-auto flex flex-row items-center justify-between border-b border-[#E8E6EF] px-5 py-3'>
-                        <button
-                            className={`px-4 py-2 ${activeMenuTab === 'General' ? 'bg-gray-200' : 'bg-white'}`}
-                            onClick={() => setActiveMenuTab('General')}
-                        >
-                            General
-                        </button>
-                        <button
-                            className={`px-4 py-2 ${activeMenuTab === 'General' ? 'bg-gray-200' : 'bg-white'}`}
-                            onClick={() => setActiveMenuTab('Tareas' as 'General' | 'Tareas')}
-                        >
-                            Tareas
-                        </button>
-                    </div>
-                    <div className='p-4'>
-                        {/* <h2>General</h2> */}
+                    <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
+
+                        <div className='flex flex-row items-center gap-1 text-black'>
+                            <span>{selectedProject?.icon}</span>
+                            <h2 className='text-xl font-bold'>{selectedProject?.title}</h2>
+                        </div>
+
+                        <div className='max-h-9 bg-[#F1F5F9] p-1 rounded-lg flex items-center'>
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab}
+                                    className={`px-3 py-1 text-sm font-medium hover:text-black ${activeMenuTab === tab
+                                        ? 'bg-white text-black rounded-md shadow-sm'
+                                        : 'text-[#64748B]'
+                                        }`}
+                                    onClick={() => setActiveMenuTab(tab)}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className='w-full h-auto flex flex-row items-center justify-center gap-4 border border-red-600 rounded-lg'>
+
+                            <div className='w-auto h-auto flex flex-row items-center justify-center gap-4 border border-blue-600 rounded-lg'>
+                                <span>Costo Total</span>
+                                <span>
+                                    {selectedProject && `$${(selectedProject.data?.fases?.reduce((acc, fase) => {
+                                        const tiempo = fase['Tiempo de desarrollo'];
+                                        if (!tiempo) return acc;
+                                        const horas = parseInt(tiempo.split(' ')[0]);
+                                        return isNaN(horas) ? acc : acc + horas;
+                                    }, 0) * 25).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`}
+                                </span>
+                            </div>
+
+                        </div>
+
                     </div>
                 </>
             }
 
-            {activeMenuTab == 'Tareas' &&
-                <Tasks projectData={projectData} setActiveMenuTab={setActiveMenuTab} />
-            }
+            {activeMenuTab === 'Fases' && tasks && (
+                <Tasks />
+            )}
 
+            {activeMenuTab === 'Diagrama' && selectedProject && (
+                <>
+                    <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
+
+                        <div className='flex flex-row items-center gap-1 text-black'>
+                            <IconCircuitPushbutton size={20} stroke={2} />
+                            <h2 className='text-xl font-bold'>Diagrama de Gantt</h2>
+                        </div>
+
+                        <div className='max-h-9 bg-[#F1F5F9] p-1 rounded-lg flex items-center'>
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab}
+                                    className={`px-3 py-1 text-sm font-medium hover:text-black ${activeMenuTab === tab
+                                        ? 'bg-white text-black rounded-md shadow-sm'
+                                        : 'text-[#64748B]'
+                                        }`}
+                                    onClick={() => setActiveMenuTab(tab)}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        <Diagrama projectData={selectedProject} />
+
+                    </div>
+                </>
+            )}
+
+            {activeMenuTab === 'Kanban' && (
+                <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
+
+                    <div className='flex flex-row items-center gap-1 text-black'>
+                        <IconLayoutKanban size={20} stroke={2} />
+                        <h2 className='text-xl font-bold'>Kanban</h2>
+                    </div>
+
+                    <div className='max-h-9 bg-[#F1F5F9] p-1 rounded-lg flex items-center'>
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab}
+                                className={`px-3 py-1 text-sm font-medium hover:text-black ${activeMenuTab === tab
+                                    ? 'bg-white text-black rounded-md shadow-sm'
+                                    : 'text-[#64748B]'
+                                    }`}
+                                onClick={() => setActiveMenuTab(tab)}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    <Kanban />
+                </div>
+            )}
+
+            {activeMenuTab === 'Pagos' && (
+                <div>Contenido de Pagos</div>
+            )}
         </div>
     );
 };
+
+export default DashboardPage;

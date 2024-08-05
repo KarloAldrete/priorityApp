@@ -1,202 +1,82 @@
 'use client';
-import { useState, useEffect } from 'react';
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
-import { IconLayoutDashboard, IconLogout, IconSparkles } from '@tabler/icons-react';
+import { IconDashboard, IconLogout, IconSparkles } from '@tabler/icons-react';
 import { TasksModal } from '@/components/generateTasksModal';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { UserButton, useUser, SignedIn } from '@clerk/nextjs';
-import { createClient } from '@/utils/supabase/client';
-import { useProject } from '@/context/projectContext';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-
-interface Project {
-    title: string;
-    icon: string;
-}
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useUser } from '@clerk/nextjs';
+import LogoSection from '@/components/coderlabs/LogoSection';
+import SidebarItem from '@/components/coderlabs/SidebarItem';
+import { useSidebarStore, useUpdateSelectedProject } from '@/stores/sidebar/sidebar.store';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 export default function Sidebar() {
     const { user } = useUser();
-    const { selectedProject, setSelectedProject } = useProject();
-    const [isCollapsed, setIsCollapsed] = useState(true);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [projects, setProjects] = useState<Project[]>([]);
-    const router = useRouter();
+
+    const isCollapsed = useSidebarStore(state => state.isCollapsed);
+    const handleCollapse = useSidebarStore(state => state.handleCollapse);
+    const projects = useSidebarStore(state => state.projects);
+    const fetchProjects = useSidebarStore(state => state.fetchProjects);
+    const modalOpen = useSidebarStore(state => state.modalOpen);
+    const setModalOpen = useSidebarStore(state => state.setModalOpen);
+    const setSelectedProjectByTitle = useSidebarStore(state => state.setSelectedProjectByTitle);
+    const selectedProject = useSidebarStore(state => state.selectedProject);
+
+    useUpdateSelectedProject();
 
     useEffect(() => {
-        if (!user) return;
+        if (user) {
+            fetchProjects(user.id);
+        }
+    }, [fetchProjects, user]);
 
-        const fetchData = async () => {
-            const supabase = await createClient();
-
-            const { data, error } = await supabase
-                .from('projects')
-                .select('title, icon')
-                .eq('owner', user.id);
-
-            if (data) {
-                const projectList = data.map((project: { title: string, icon?: string }) => ({
-                    title: project.title,
-                    icon: project.icon || 'default-icon'
-                }));
-                setProjects(projectList);
-            };
-
-            if (error) {
-                console.error(error);
-            };
-        };
-
-        fetchData();
-    }, [user]);
-
-    function handleCollapse() {
-        setIsCollapsed(!isCollapsed);
+    const handleProjectClick = (projectTitle: string, path: string) => {
+        setSelectedProjectByTitle(projectTitle);
     };
-
-    function handleIconClick() {
-        setIsModalVisible(true);
-    };
-
-    function handleProjectClick(projectTitle: string) {
-        setSelectedProject(projectTitle);
-    }
-
-    useEffect(() => {
-        const projectTitle = selectedProject === '/' ? 'Dashboard' : selectedProject;
-        document.title = `Priority | ${projectTitle}`;
-    }, [selectedProject]);
 
     return (
         <>
-            <TooltipProvider delayDuration={50}>
-
-                <ResizablePanel onCollapse={handleCollapse} onExpand={handleCollapse} collapsible={true} minSize={16} defaultSize={16} maxSize={16} className='w-auto h-auto min-w-[62px] rounded-xl font-geist'>
-
+            <ResizablePanel onCollapse={handleCollapse} onExpand={handleCollapse} collapsible={true} minSize={15} defaultSize={3} maxSize={15} className='w-full h-auto min-w-[62px] rounded-xl font-geist'>
+                <title>{`Priority | ${selectedProject?.icon} ${selectedProject?.title}`}</title>
+                <TooltipProvider delayDuration={50}>
                     <div className='rounded-xl bg-white w-full h-full flex flex-col items-start justify-between px-3 py-3 border border-[#E8E6EF]'>
-
                         <div className='w-full h-auto flex flex-col items-start justify-start gap-2.5'>
-
-                            <div className='w-full min-h-9 pb-3 flex flex-row items-center justify-start'>
-
-                                <picture className='w-full h-full max-w-9 max-h-9 flex items-center justify-center'>
-                                    <img alt='logo' className='w-full h-full max-w-9 max-h-9 flex items-center justify-center' src='https://mypqirkuxpecgfrnjryk.supabase.co/storage/v1/object/public/Priority/PriorityLogo.svg' />
-                                </picture>
-
-                                {!isCollapsed &&
-                                    <span className='text-black text-xl leading-5 font-bold text-center'>Priority</span>
-                                }
-
-                            </div>
-
-                            <Tooltip>
-
-                                <TooltipTrigger asChild>
-
-                                    <Link href={`/dashboard`} className={`w-full min-h-9 max-w-[300px] flex flex-row items-center justify-start gap-2 p-2 rounded-md text-black ${selectedProject === '/' ? 'bg-black text-white' : 'hover:bg-black hover:text-white'} ease-in-out duration-200 cursor-pointer`} onClick={() => handleProjectClick('/')}>
-                                        <IconLayoutDashboard size={20} stroke={1.75} className='min-w-5 min-h-5' />
-                                        {!isCollapsed &&
-                                            <span className='text-sm leading-5 font-medium'>Dashboard</span>
-                                        }
-                                    </Link>
-
-                                </TooltipTrigger>
-
-                                {isCollapsed && (
-                                    <TooltipContent side='right' className='bg-black text-white font-medium border border-[#09090B] p-2 rounded-md'>
-                                        <p>Dashboard</p>
-                                    </TooltipContent>
-                                )}
-
-                            </Tooltip>
-
-                            <Tooltip>
-
-                                <TooltipTrigger asChild>
-
-                                    <div className='w-full min-h-9 max-w-[300px] flex flex-row items-center justify-start gap-2 p-2 bg-white rounded-md text-black hover:bg-black hover:text-white ease-in-out duration-200 cursor-pointer' onClick={handleIconClick}>
-                                        <IconSparkles size={20} stroke={1.75} className='min-w-5 min-h-5' />
-                                        {!isCollapsed &&
-                                            <span className='text-sm leading-5 font-medium'>Nuevo Proyecto</span>
-                                        }
-                                    </div>
-
-                                </TooltipTrigger>
-
-                                {isCollapsed && (
-                                    <TooltipContent side='right' className='bg-black text-white font-medium border border-[#09090B] p-2 rounded-md'>
-                                        <p>Nuevo Proyecto</p>
-                                    </TooltipContent>
-                                )}
-
-                            </Tooltip>
-
+                            <LogoSection />
+                            <SidebarItem
+                                key="dashboard"
+                                icon={<IconDashboard size={20} stroke={1.75} />}
+                                label="Dashboard"
+                                projectTitle="Dashboard"
+                                path="/dashboard"
+                            />
+                            <SidebarItem
+                                key="newProject"
+                                icon={<IconSparkles size={20} stroke={1.75} />}
+                                label="Nuevo Proyecto"
+                                onClick={() => setModalOpen(true)}
+                            />
                             <div className='w-full h-[1px] border-b border-[#E4E4E7]' />
-
                             {projects.map(project => (
-                                <Tooltip key={project.title}>
-
-                                    <TooltipTrigger asChild>
-
-                                        <Link href={`/dashboard/${project.title}`} className={`w-full min-h-9 max-w-[300px] flex flex-row items-center justify-start gap-2 p-2 rounded-md text-black ${selectedProject === project.title ? 'bg-black text-white' : 'hover:bg-black hover:text-white'} ease-in-out duration-200 cursor-pointer`} onClick={() => handleProjectClick(project.title)}>
-                                            <span className='w-5 h-5' style={{ transform: 'translateY(-2px) translateX(-.5px)' }}>{project.icon}</span>
-                                            {!isCollapsed &&
-                                                <span className='text-sm leading-5 font-medium'>{project.title}</span>
-                                            }
-                                        </Link>
-
-                                    </TooltipTrigger>
-
-                                    {isCollapsed && (
-                                        <TooltipContent side='right' className='bg-black text-white font-medium border border-[#09090B] p-2 rounded-md'>
-                                            <p>{project.title}</p>
-                                        </TooltipContent>
-                                    )}
-
-                                </Tooltip>
+                                <SidebarItem
+                                    key={project.title}
+                                    icon={<span className='w-5 h-5' style={{ transform: 'translateY(-2px) translateX(-.5px)' }}>{project.icon}</span>}
+                                    label={project.title}
+                                    projectTitle={project.title}
+                                    path={`/dashboard/${project.title}`}
+                                    onClick={() => handleProjectClick(project.title, `/dashboard/${project.title}`)}
+                                />
                             ))}
-
                         </div>
-
-                        {/* <SignedIn>
-                            <UserButton />
-                        </SignedIn> */}
-
-                        <Tooltip>
-
-                            <TooltipTrigger asChild>
-
-                                <div className='w-full min-h-9 max-w-[300px] flex flex-row items-center justify-start gap-2 p-2 bg-white rounded-md text-black hover:bg-[#CE4444] hover:text-white ease-in-out duration-200 cursor-pointer' onClick={handleIconClick}>
-                                    <IconLogout size={20} stroke={1.75} className='min-w-5 min-h-5' />
-                                    {!isCollapsed &&
-                                        <span className='text-sm leading-5 font-medium'>Cerrar Sesión</span>
-                                    }
-                                </div>
-
-                            </TooltipTrigger>
-
-                            {isCollapsed && (
-                                <TooltipContent side='right' className='bg-[#CE4444] text-white font-medium border border-[#CE4444] p-2 rounded-md'>
-                                    <p>Cerrar Sesión</p>
-                                </TooltipContent>
-                            )}
-
-                        </Tooltip>
-
+                        <SidebarItem
+                            icon={<IconLogout size={20} stroke={1.75} />}
+                            label="Cerrar Sesión"
+                            hoverColor="#CE4444"
+                        />
                     </div>
-
-                </ResizablePanel>
-
-                <ResizableHandle withHandle className='custom-handle' />
-
-                <TasksModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} />
-
-            </TooltipProvider>
+                </TooltipProvider>
+            </ResizablePanel>
+            <ResizableHandle withHandle className='custom-handle' />
+            <TasksModal isVisible={modalOpen} setIsVisible={setModalOpen} />
         </>
     );
 }
