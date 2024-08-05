@@ -26,9 +26,9 @@ const Tasks = () => {
 
     const handleSubtareaToggle = (index: number) => {
         if (selectedTarea) {
-            const updatedSubtareas = [...selectedTarea.subtareas];
+            const updatedSubtareas = [...selectedTarea.tareas];
             updatedSubtareas[index].completed = !updatedSubtareas[index].completed;
-            setSelectedTarea({ ...selectedTarea, subtareas: updatedSubtareas });
+            setSelectedTarea({ ...selectedTarea, tareas: updatedSubtareas });
 
             const activity: Actividad = {
                 tipo: 'subtarea-completada',
@@ -46,25 +46,25 @@ const Tasks = () => {
         setActiveMenuTab('General');
     };
 
-    const completedSubtareas = selectedTarea?.subtareas?.filter(subtarea => subtarea.completed).length || 0;
-    const totalSubtareas = selectedTarea?.subtareas?.length || 0;
+    const completedSubtareas = selectedTarea?.tareas?.filter(subtarea => subtarea.completed).length || 0;
+    const totalSubtareas = selectedTarea?.tareas?.length || 0;
 
     useEffect(() => {
         if (selectedProject) {
-            setSelectedTarea(selectedProject.data.tareas[0] || null);
+            setSelectedTarea(selectedProject.data.fases[0] || null);
         }
     }, [selectedProject]);
 
     function nextTask() {
-        const currentIndex = selectedProject?.data.tareas.findIndex(tarea => tarea === selectedTarea) || 0;
-        const nextIndex = (currentIndex + 1) % (selectedProject?.data.tareas.length || 0) || 0;
-        setSelectedTarea(selectedProject?.data.tareas[nextIndex] || null);
+        const currentIndex = selectedProject?.data.fases.findIndex(tarea => tarea === selectedTarea) || 0;
+        const nextIndex = (currentIndex + 1) % (selectedProject?.data.fases.length || 0) || 0;
+        setSelectedTarea(selectedProject?.data.fases[nextIndex] || null);
     }
 
     function previousTask() {
-        const currentIndex = selectedProject?.data.tareas.findIndex(tarea => tarea === selectedTarea) || 0;
-        const previousIndex = (currentIndex - 1 + (selectedProject?.data.tareas.length || 0)) % (selectedProject?.data.tareas.length || 0);
-        setSelectedTarea(selectedProject?.data.tareas[previousIndex] || null);
+        const currentIndex = selectedProject?.data.fases.findIndex(tarea => tarea === selectedTarea) || 0;
+        const previousIndex = (currentIndex - 1 + (selectedProject?.data.fases.length || 0)) % (selectedProject?.data.fases.length || 0);
+        setSelectedTarea(selectedProject?.data.fases[previousIndex] || null);
     }
 
     const getRelativeTime = (date: Date) => {
@@ -118,7 +118,7 @@ const Tasks = () => {
 
                 <div className='w-full h-full flex flex-col items-start justify-start gap-4 px-6 overflow-y-auto'>
 
-                    {selectedProject && selectedProject.data.tareas.map((tarea, index) => (
+                    {selectedProject && selectedProject.data.fases.map((tarea, index) => (
                         <div
                             key={index}
                             className={`w-full h-auto px-3 py-2.5 border border-[#C4CBD4] text-[#64748B] rounded-md flex flex-col gap-2 ${selectedTarea === tarea ? 'bg-[#F1F5F9] cursor-default' : 'cursor-pointer hover:bg-[#F1F5F9]'}`}
@@ -269,8 +269,8 @@ const Tasks = () => {
 
                             {activeTab === 'tareas' && (
                                 <div className='w-full h-auto max-h-[400px] overflow-y-auto flex flex-col items-start justify-start gap-3'>
-                                    {selectedTarea.subtareas?.length > 0 ? (
-                                        selectedTarea.subtareas.map((subtarea, index) => (
+                                    {selectedTarea.tareas?.length > 0 ? (
+                                        selectedTarea.tareas.map((subtarea, index) => (
                                             <div key={index} className='w-full h-auto flex flex-row items-center justify-between gap-2 px-3 py-2.5 border border-[#E4E4E7] rounded-md'>
                                                 <div className='flex items-center'>
                                                     <div className='relative flex items-center justify-center'>

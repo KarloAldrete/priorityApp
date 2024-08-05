@@ -3,72 +3,112 @@ import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
-export async function getAnswer(description: string, user: string) {
-    console.log(description);
+async function generateProjectTasks(description: string, projectData: any) {
+    const prompt = `
+        Descripción: ${description}
+        Necesitamos una lista de tareas con nombres específicos y creativos que no simplemente repitan el nombre de la etapa.
+        Por ejemplo, no queremos "Planificación - Planificación".
+        El tiempo de desarrollo debe basarse en el período de trabajo diario (${projectData.workingPeriod} horas), y la información de pago (${projectData.payRoll}) determinará si se expresa en horas o días.
+        Si es en horas, el tiempo de desarrollo debe ser en horas de trabajo; si es en días, debe ser en días.
+        Desglosa cada fase en pasos más pequeños y detallados, asegurando que las subtareas sean específicas para cada tarea dentro de esa tarea.
+        Las etapas deben ser específicas para cada área de desarrollo, como: Planificación, Diseño, Desarrollo, Pruebas, Despliegue.
+        Crea tantas tareas como sea posible, específicamente y en orden cronológico, basándote en la experiencia de programadores senior en internet para determinar la organización adecuada del proyecto.
+        Usa un lenguaje claro y preciso para describir cada tarea y subtarea.
+        Todas las tareas deben comenzar con el estado "Pendiente".
+        Además, considera las tecnologías especificadas en projectData.tags para influir en las tareas y crear subtareas más específicas.
+        Responde en español.
 
-    let response;
-    let cotizacion;
+        Ejemplo de tareas específicas para un e-commerce de leggings:
 
-    const projectData = JSON.parse(description);
+        Planificación:
+        - Investigación de mercado para e-commerce de leggings.
+        - Definición de requisitos y funcionalidades del sitio.
+        - Creación de un plan de proyecto detallado.
+
+        Diseño:
+        - Diseño de wireframes para la página de inicio en Figma.
+        - Diseño de wireframes para la página de productos en Figma.
+        - Diseño de wireframes para el carrito de compras en Figma.
+        - Diseño de wireframes para la página de pago en Figma.
+        - Creación de prototipos interactivos en Figma.
+
+        Desarrollo:
+        - Configuración del entorno de desarrollo con NextJS y Vercel.
+        - Implementación de la página de inicio con NextJS y TailwindCSS.
+        - Implementación de la página de productos con NextJS y TailwindCSS.
+        - Integración de la base de datos de productos con Supabase.
+        - Implementación del carrito de compras con NextJS y TailwindCSS.
+        - Integración de la pasarela de pagos con Stripe.
+        - Implementación de la página de pago con NextJS y TailwindCSS.
+        - Configuración de autenticación de usuarios con Clerk.
+
+        Pruebas:
+        - Pruebas unitarias de componentes con Jest.
+        - Pruebas de integración de la pasarela de pagos con Stripe.
+        - Pruebas de usabilidad del sitio con usuarios reales.
+
+        Despliegue:
+        - Configuración de despliegue continuo con Vercel.
+        - Despliegue de la aplicación en Vercel.
+        - Monitoreo y mantenimiento post-despliegue.
+
+        Asegúrate de que cada tarea sea lo más específica posible y que se adapte a las tecnologías y requisitos del proyecto.
+    `;
 
     try {
-        response = await generateObject({
+        const response = await generateObject({
             model: google('models/gemini-1.5-flash-latest'),
             mode: 'json',
             schema: z.object({
-                tareas: z.array(z.object({
+                fases: z.array(z.object({
                     nombre: z.string(),
                     descripcion: z.string(),
-                    subtareas: z.array(z.object({
+                    tareas: z.array(z.object({
+                        nombre: z.string(),
                         descripcion: z.string(),
+                        estado: z.string(),
                     })),
                     etapa: z.string(),
-                    estado: z.string(),
                     'Tiempo de desarrollo': z.string(),
                 }))
             }),
-            prompt:
-                `Description: ${description}\n` +
-                `We need a list of tasks with specific and creative names that do not simply repeat the stage name. ` +
-                `For example, we do not want "Planning - Planning". ` +
-                `The development time should be based on the daily working period (${projectData.workingPeriod} hours), and the payment information (${projectData.payRoll}) will determine if it is expressed in hours or days. ` +
-                `If in hours, the development time should be in working hours; if in days, it should be in days. ` +
-                `Divide each phase into smaller, detailed steps, ensuring that subtasks are specific to each task within that task. ` +
-                `The stages should be specific to each development area, such as: Planning, Design, Development, Testing, Deployment. ` +
-                `Create as many tasks as possible, specifically and in chronological order, based on the experience of senior programmers on the internet to determine the appropriate organization for the project. ` +
-                `Use clear and precise language to describe each task and subtask. ` +
-                `All tasks should start with the status "Pending". ` +
-                `Additionally, consider the technologies specified in projectData.tags to influence the tasks and create more specific subtasks.\n` +
-                `Respond in Spanish.`,
+            prompt: prompt.trim(),
         });
+
+        return response.object;
     } catch (error) {
         console.error('Error al generar el objeto:', error);
         throw new Error('Error al generar el objeto');
     }
+}
 
-    console.log(response.object);
+export async function getAnswer(description: string, user: string) {
+    console.log(description);
 
-    // try {
-    //     cotizacion = await generateText({
-    //         model: google('models/gemini-1.5-pro-latest'),
-    //         system: `En base a la informacion recabada debes comportarte como Product Designer para cotizar proyectos de desarrollo de software, ten en cuenta que el programador cobra por ${projectData.payRoll} la cantidad de ${projectData.moneyAmount}. Cuando menciones los pasos de desarrollo no digas cuanto cuesta esa fase, mejor al final da un costo total estimado`,
-    //         prompt: JSON.stringify(response.object)
-    //     });
-    // } catch (error) {
-    //     console.error('Error al generar la cotización:', error);
-    //     throw new Error('Error al generar la cotización');
-    // }
+    const projectData = JSON.parse(description);
+    let responseObject;
 
-    // console.log(cotizacion.text);
+    try {
+        responseObject = await generateProjectTasks(description, projectData);
+    } catch (error) {
+        console.error('Error al generar las tareas del proyecto:', error);
+        throw new Error('Error al generar las tareas del proyecto');
+    }
 
-    await fetch('http://localhost:3000/api/creation', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ title: projectData.projectName, data: response.object, user: user })
-    });
+    console.log(responseObject);
 
-    const { object } = response;
-    return object;
-};
+    try {
+        await fetch('http://localhost:3000/api/creation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: projectData.projectName, data: responseObject, user: user })
+        });
+    } catch (error) {
+        console.error('Error al enviar los datos a la API:', error);
+        throw new Error('Error al enviar los datos a la API');
+    }
+
+    return responseObject;
+}

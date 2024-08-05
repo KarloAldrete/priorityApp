@@ -6,25 +6,42 @@ import '@xyflow/react/dist/style.css';
 import { ReactFlow, Background, BackgroundVariant, applyEdgeChanges, applyNodeChanges, Node, Edge } from '@xyflow/react';
 import CustomNode from '@/components/customNode';
 
+export interface Actividad {
+    tipo: 'subtarea-completada' | 'comentario';
+    descripcion: string;
+    fecha: Date;
+}
 
-interface Subtarea {
+export interface Comentario {
+    usuario: string;
+    mensaje: string;
+    fecha: Date;
+}
+
+export interface Subtarea {
+    nombre: string;
     descripcion: string;
     completed: boolean;
-};
+    estado: string;
+}
 
-interface Tarea {
+export interface Tarea {
     nombre: string;
     descripcion: string;
     'Tiempo de desarrollo': string;
-    subtareas: Subtarea[];
-};
+    estado: string;
+    tareas: Subtarea[];
+    etapa: string;
+    actividades: Actividad[];
+    comentarios: Comentario[];
+}
 
 interface ProjectData {
     id: number;
     owner: string;
     title: string;
     data: {
-        tareas: Tarea[];
+        fases: Tarea[];
     };
 };
 
@@ -51,13 +68,13 @@ export const Diagrama = ({ projectData }: { projectData: ProjectData }) => {
             id: '0',
             type: 'custom',
             data: { name: 'INICIO', isInicio: true },
-            position: { x: 0, y: alturaNodoInitial(projectData.data.tareas.length) },
+            position: { x: 0, y: alturaNodoInitial(projectData.data.fases.length) },
         };
 
-        const mappedNodes = projectData.data.tareas.map((tarea, index) => ({
+        const mappedNodes = projectData.data.fases.map((tarea, index) => ({
             id: `${index + 1}`,
             type: 'custom',
-            data: { name: tarea.nombre, tareasLenght: tarea.subtareas.length },
+            data: { name: tarea.nombre, tareasLenght: tarea.tareas.length },
             position: { x: 500, y: index * (80 + 20) }, // Eliminar las comillas alrededor de index
         }));
 

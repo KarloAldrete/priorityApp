@@ -3,7 +3,7 @@ import Tasks from '@/modules/tasks';
 import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
 import { Diagrama } from '@/components/diagrama';
 import { useTasksStore } from '@/stores/tasks/tasks.store';
-import { IconCalendar, IconFileTextAi } from '@tabler/icons-react';
+import { IconCircuitPushbutton, IconLayoutKanban } from '@tabler/icons-react';
 import { Kanban } from '@/modules/kanban';
 
 const DashboardPage = () => {
@@ -40,6 +40,22 @@ const DashboardPage = () => {
                             ))}
                         </div>
 
+                        <div className='w-full h-auto flex flex-row items-center justify-center gap-4 border border-red-600 rounded-lg'>
+
+                            <div className='w-auto h-auto flex flex-row items-center justify-center gap-4 border border-blue-600 rounded-lg'>
+                                <span>Costo Total</span>
+                                <span>
+                                    {selectedProject && `$${(selectedProject.data?.fases?.reduce((acc, fase) => {
+                                        const tiempo = fase['Tiempo de desarrollo'];
+                                        if (!tiempo) return acc;
+                                        const horas = parseInt(tiempo.split(' ')[0]);
+                                        return isNaN(horas) ? acc : acc + horas;
+                                    }, 0) * 25).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`}
+                                </span>
+                            </div>
+
+                        </div>
+
                     </div>
                 </>
             }
@@ -53,7 +69,7 @@ const DashboardPage = () => {
                     <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
 
                         <div className='flex flex-row items-center gap-1 text-black'>
-                            <IconCalendar size={20} stroke={2} />
+                            <IconCircuitPushbutton size={20} stroke={2} />
                             <h2 className='text-xl font-bold'>Diagrama de Gantt</h2>
                         </div>
 
@@ -79,7 +95,30 @@ const DashboardPage = () => {
             )}
 
             {activeMenuTab === 'Kanban' && (
-                <Kanban />
+                <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
+
+                    <div className='flex flex-row items-center gap-1 text-black'>
+                        <IconLayoutKanban size={20} stroke={2} />
+                        <h2 className='text-xl font-bold'>Kanban</h2>
+                    </div>
+
+                    <div className='max-h-9 bg-[#F1F5F9] p-1 rounded-lg flex items-center'>
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab}
+                                className={`px-3 py-1 text-sm font-medium hover:text-black ${activeMenuTab === tab
+                                    ? 'bg-white text-black rounded-md shadow-sm'
+                                    : 'text-[#64748B]'
+                                    }`}
+                                onClick={() => setActiveMenuTab(tab)}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    <Kanban />
+                </div>
             )}
 
             {activeMenuTab === 'Pagos' && (

@@ -18,8 +18,10 @@ export interface Comentario {
 }
 
 export interface Subtarea {
+    nombre: string;
     descripcion: string;
     completed: boolean;
+    estado: string;
 }
 
 export interface Tarea {
@@ -27,7 +29,7 @@ export interface Tarea {
     descripcion: string;
     'Tiempo de desarrollo': string;
     estado: string;
-    subtareas: Subtarea[];
+    tareas: Subtarea[];
     etapa: string;
     actividades: Actividad[];
     comentarios: Comentario[];
@@ -39,7 +41,7 @@ export interface ProjectData {
     title: string;
     icon?: string;
     data: {
-        tareas: Tarea[];
+        fases: Tarea[];
     };
 }
 
@@ -58,6 +60,7 @@ interface SidebarStore {
     setSelectedProjectByTitle: (title: string) => void;
     addActivityToTask: (projectId: number, taskName: string, activity: Actividad) => void;
     actividades: Actividad[];
+    getAllTasksWithStage: () => Tarea[];
 }
 
 const syncWithSessionStorage = (config: StateCreator<SidebarStore>) =>
@@ -116,7 +119,7 @@ export const useSidebarStore = create<SidebarStore>()(
                         }
                     },
                     selectedProjectTasks: [],
-                    getSelectedProjectTasks: () => get().selectedProject?.data.tareas || [],
+                    getSelectedProjectTasks: () => get().selectedProject?.data.fases || [],
                     setSelectedProjectByTitle: (title: string) => {
                         const projects = get().projects;
                         const matchingProject = projects.find(p => p.title.toLowerCase() === title.toLowerCase());
@@ -137,10 +140,10 @@ export const useSidebarStore = create<SidebarStore>()(
                             const projectIndex = state.projects.findIndex(p => p.id === projectId);
                             if (projectIndex === -1) return state;
 
-                            const taskIndex = state.projects[projectIndex].data.tareas.findIndex(t => t.nombre === taskName);
+                            const taskIndex = state.projects[projectIndex].data.fases.findIndex(t => t.nombre === taskName);
                             if (taskIndex === -1) return state;
 
-                            const updatedTasks = [...state.projects[projectIndex].data.tareas];
+                            const updatedTasks = [...state.projects[projectIndex].data.fases];
                             const task = updatedTasks[taskIndex];
 
                             // Asegurarse de que el array actividades esté inicializado
@@ -151,12 +154,19 @@ export const useSidebarStore = create<SidebarStore>()(
                             task.actividades.push(activity);
 
                             const updatedProjects = [...state.projects];
-                            updatedProjects[projectIndex].data.tareas = updatedTasks;
+                            updatedProjects[projectIndex].data.fases = updatedTasks;
 
                             return { projects: updatedProjects };
                         });
                     },
                     actividades: [],
+                    getAllTasksWithStage: () => {
+                        const selectedProject = get().selectedProject;
+                        if (!selectedProject) return [];
+                        return selectedProject.data.fases.flatMap(fase =>
+                            fase.tareas.map(tarea => ({ ...tarea, etapa: fase.etapa }))
+                        );
+                    },
                 })
             ) as StateCreator<SidebarStore, [], []>,
         ),
