@@ -61,7 +61,6 @@ export const Kanban = () => {
         const allTasks = Object.values(columns).flatMap(column =>
             column.tasks.map(task => ({ ...task, estado: column.title }))
         );
-        // updateTasks(allTasks);
     };
 
     return (
@@ -96,7 +95,7 @@ export const Kanban = () => {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        className='p-2 rounded border border-[#E4E4E7] shadow-sm flex flex-col items-start justify-start gap-2'
+                                                        className='p-2 rounded-md border border-[#E4E4E7] shadow-sm flex flex-col items-start justify-start gap-2'
                                                     >
                                                         <div className='flex justify-between items-start flex-col gap-2 text-start'>
                                                             <div>
