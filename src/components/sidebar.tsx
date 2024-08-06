@@ -6,23 +6,23 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useUser } from '@clerk/nextjs';
 import LogoSection from '@/components/coderlabs/LogoSection';
 import SidebarItem from '@/components/coderlabs/SidebarItem';
-import { useSidebarStore, useUpdateSelectedProject } from '@/stores/sidebar/sidebar.store';
+import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { useProjectStore } from '@/stores/project/project.store';
+import { useUpdateSelectedProject } from '@/hooks/useUpdateSelectedProject';
 
 export default function Sidebar() {
     const { user } = useUser();
-
+    useUpdateSelectedProject();
     const isCollapsed = useSidebarStore(state => state.isCollapsed);
     const handleCollapse = useSidebarStore(state => state.handleCollapse);
     const projects = useSidebarStore(state => state.projects);
     const fetchProjects = useSidebarStore(state => state.fetchProjects);
     const modalOpen = useSidebarStore(state => state.modalOpen);
     const setModalOpen = useSidebarStore(state => state.setModalOpen);
-    const setSelectedProjectByTitle = useSidebarStore(state => state.setSelectedProjectByTitle);
-    const selectedProject = useSidebarStore(state => state.selectedProject);
+    const setSelectedProjectByTitle = useProjectStore(state => state.setSelectedProjectByTitle);
+    const selectedProject = useProjectStore(state => state.selectedProject);
 
-    useUpdateSelectedProject();
 
     useEffect(() => {
         if (user) {
@@ -76,7 +76,7 @@ export default function Sidebar() {
                 </TooltipProvider>
             </ResizablePanel>
             <ResizableHandle withHandle className='custom-handle' />
-            <TasksModal isVisible={modalOpen} setIsVisible={setModalOpen} />
+            <TasksModal />
         </>
     );
 }

@@ -1,12 +1,12 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { Tarea, useSidebarStore } from '@/stores/sidebar/sidebar.store';
-import { IconCheck, IconCircleCheck, IconCircleDashed, IconClipboardCheck, IconClock, IconEye, IconPlus, IconProgress, IconProgressHelp } from '@tabler/icons-react';
-
+import { IconCircleCheck, IconCircleDashed, IconPlus, IconProgress, IconProgressHelp } from '@tabler/icons-react';
+import { Tarea } from '@/interfaces/task.interface';
+import { useProjectStore } from '@/stores/project/project.store';
 type ColumnId = 'pending' | 'inProgress' | 'inReview' | 'completed';
 
 export const Kanban = () => {
-    const tasks = useSidebarStore((state) => state.getAllTasksWithStage());
+    const tasks = useProjectStore((state) => state.getAllTasksWithStage());
 
     const columns: Record<ColumnId, { title: string; tasks: Tarea[] }> = {
         pending: {
@@ -103,7 +103,7 @@ export const Kanban = () => {
                                                                 <span className='block text-sm font-medium text-gray-900'>{task.nombre}</span>
                                                                 <span className='block text-xs text-gray-500'>{task.descripcion}</span>
                                                             </div>
-                                                            <div className={`w-auto h-auto flex flex-row items-center justify-center px-1.5 py-0.5 rounded ${task.etapa === 'Planificación' ? 'bg-[#F1F5F9] text-[#64748B]' :
+                                                            <div className={`w-auto h-auto flex flex-row items-center justify-center px-1.5 py-0.5 rounded font-medium ${task.etapa === 'Planificación' ? 'bg-[#F1F5F9] text-[#64748B]' :
                                                                 task.etapa === 'Diseño' ? 'bg-[#E6E6FF] text-[#7174FE]' :
                                                                     task.etapa === 'Desarrollo' ? 'bg-[#EBF9F4] text-[#34A97F]' :
                                                                         task.etapa === 'Pruebas' ? 'bg-[#FCECE9] text-[#E76E50]' :

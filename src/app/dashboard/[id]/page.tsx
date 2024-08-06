@@ -5,10 +5,10 @@ import { Diagrama } from '@/components/diagrama';
 import { useTasksStore } from '@/stores/tasks/tasks.store';
 import { IconCircuitPushbutton, IconLayoutKanban } from '@tabler/icons-react';
 import { Kanban } from '@/modules/kanban';
-
+import { useProjectStore } from '@/stores/project/project.store';
 const DashboardPage = () => {
-    const getSelectedProjectTasks = useSidebarStore(state => state.getSelectedProjectTasks);
-    const selectedProject = useSidebarStore(state => state.selectedProject);
+    const getSelectedProjectTasks = useProjectStore(state => state.getSelectedProjectTasks);
+    const selectedProject = useProjectStore(state => state.selectedProject);
     const { activeMenuTab, setActiveMenuTab } = useTasksStore(state => state);
     const tasks = getSelectedProjectTasks();
 

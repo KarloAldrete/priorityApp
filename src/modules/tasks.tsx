@@ -1,8 +1,9 @@
 'use client';
 import { IconArrowNarrowLeft, IconArrowNarrowRight, IconCalendarExclamation, IconCheck, IconCircleDashed, IconClock, IconDotsVertical, IconFileTextAi, IconFocus, IconTag, IconTrash, IconUsers, IconUsersPlus } from '@tabler/icons-react';
 import { useCallback, useEffect, useState } from 'react';
-import { useSidebarStore, Actividad, Tarea } from '@/stores/sidebar/sidebar.store';
+import { Actividad, Tarea } from '@/interfaces/task.interface';
 import { useTasksStore } from '@/stores/tasks/tasks.store';
+import { useProjectStore } from '@/stores/project/project.store';
 
 const Tasks = () => {
 
@@ -16,13 +17,13 @@ const Tasks = () => {
     const setActiveMenuTab = useTasksStore(state => state.setActiveMenuTab);
     const menuTabs = useTasksStore(state => state.menuTabs);
 
-    const addActivityToTask = useSidebarStore(state => state.addActivityToTask);
+    const addActivityToTask = useProjectStore(state => state.addActivityToTask);
 
     const handleTareaClick = useCallback((tarea: Tarea) => {
         setSelectedTarea(tarea);
     }, []);
 
-    const selectedProject = useSidebarStore(state => state.selectedProject);
+    const selectedProject = useProjectStore(state => state.selectedProject);
 
     const handleSubtareaToggle = (index: number) => {
         if (selectedTarea) {
@@ -40,10 +41,6 @@ const Tasks = () => {
                 addActivityToTask(selectedProject.id, selectedTarea.nombre, activity);
             }
         }
-    };
-
-    const handleTabChange = () => {
-        setActiveMenuTab('General');
     };
 
     const completedSubtareas = selectedTarea?.tareas?.filter(subtarea => subtarea.completed).length || 0;
