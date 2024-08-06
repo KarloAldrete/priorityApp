@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Tarea } from "@/stores/sidebar/sidebar.store";
+import { Tarea } from "@/interfaces/task.interface";
 
 interface TasksStore {
     tasks: Tarea[];

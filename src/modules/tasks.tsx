@@ -43,10 +43,6 @@ const Tasks = () => {
         }
     };
 
-    const handleTabChange = () => {
-        setActiveMenuTab('General');
-    };
-
     const completedSubtareas = selectedTarea?.tareas?.filter(subtarea => subtarea.completed).length || 0;
     const totalSubtareas = selectedTarea?.tareas?.length || 0;
 
