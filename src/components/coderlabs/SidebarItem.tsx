@@ -1,6 +1,7 @@
 'use client';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { useProjectStore } from '@/stores/project/project.store';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -16,7 +17,7 @@ interface SidebarItemProps {
 const SidebarItem = React.memo(({ icon, label, projectTitle, onClick, hoverColor = 'black', path }: SidebarItemProps) => {
     const router = useRouter();
     const isCollapsed = useSidebarStore(state => state.isCollapsed);
-    const selectedProject = useSidebarStore(state => state.selectedProject);
+    const selectedProject = useProjectStore(state => state.selectedProject);
 
     const handleClick = () => {
         if (onClick) {

@@ -1,70 +1,22 @@
 import { create, StateCreator } from 'zustand';
-import { createClient } from '@/utils/supabase/client';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { devtools, createJSONStorage, persist } from 'zustand/middleware';
 import { toast } from 'sonner';
+import { ProjectData } from '@/interfaces/task.interface';
+import { useProjectStore } from '@/stores/project/project.store';
 
-export interface Actividad {
-    tipo: 'subtarea-completada' | 'comentario';
-    descripcion: string;
-    fecha: Date;
-}
-
-export interface Comentario {
-    usuario: string;
-    mensaje: string;
-    fecha: Date;
-}
-
-export interface Subtarea {
-    nombre: string;
-    descripcion: string;
-    completed: boolean;
-    estado: string;
-    'Tiempo de desarrollo': string;
-    actividades: Actividad[];
-    comentarios: Comentario[];
-    tareas: Subtarea[];
-}
-
-export interface Tarea {
-    nombre: string;
-    descripcion: string;
-    'Tiempo de desarrollo': string;
-    estado: string;
-    tareas: Subtarea[];
-    etapa: string;
-    actividades: Actividad[];
-    comentarios: Comentario[];
-}
-
-export interface ProjectData {
-    id: number;
-    owner: string;
-    title: string;
-    icon?: string;
-    data: {
-        fases: Tarea[];
-    };
-}
+const { fetchProjects, setSelectedProjectFromPathname, setProjects, setSelectedProjectByTitle } = useProjectStore.getState();
 
 interface SidebarStore {
     isCollapsed: boolean;
     handleCollapse: () => void;
     handleExpand: () => void;
-    projects: ProjectData[];
-    fetchProjects: (userId: string) => Promise<void>;
     modalOpen: boolean;
     setModalOpen: (modalOpen: boolean) => void;
-    selectedProject: ProjectData | null;
-    selectedProjectTasks: Tarea[];
-    getSelectedProjectTasks: () => Tarea[];
-    setSelectedProjectFromPathname: (pathname: string) => void;
-    setSelectedProjectByTitle: (title: string) => void;
-    addActivityToTask: (projectId: number, taskName: string, activity: Actividad) => void;
-    actividades: Actividad[];
-    getAllTasksWithStage: () => Tarea[];
+    projects: ProjectData[];
+    setProjects: (projects: ProjectData[]) => void;
+    fetchProjects: (userId: string) => Promise<void>;
 }
 
 const syncWithSessionStorage = (config: StateCreator<SidebarStore>) =>
@@ -83,7 +35,7 @@ export const useSidebarStore = create<SidebarStore>()(
     persist(
         syncWithSessionStorage(
             devtools(
-                (set, get) => ({
+                (set) => ({
                     isCollapsed: false,
                     handleCollapse: () => {
                         set((state) => ({
@@ -95,88 +47,13 @@ export const useSidebarStore = create<SidebarStore>()(
                             isCollapsed: false
                         }));
                     },
-                    projects: [],
-                    fetchProjects: async (userId: string) => {
-                        const supabase = createClient();
-                        const { data, error } = await supabase.from('projects').select('*').eq('owner', userId);
-                        if (error) {
-                            console.error('Error fetching projects:', error);
-                            toast.error('Error al obtener proyectos');
-                        } else {
-                            set({ projects: data });
-                            toast.success('Datos obtenidos de Supabase');
-                        }
-                    },
                     modalOpen: false,
                     setModalOpen: (modalOpen) => set({ modalOpen }),
-                    selectedProject: null,
-                    setSelectedProjectFromPathname: (pathname: string) => {
-                        const projectName = pathname.split('/').pop();
-                        const projects = get().projects;
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === projectName?.toLowerCase());
-                        if (matchingProject) {
-                            set({ selectedProject: matchingProject });
-                            toast.success(`Proyecto seleccionado: ${matchingProject.title}`);
-                        } else {
-                            set({ selectedProject: null });
-                            toast.info('Ningún proyecto seleccionado');
-                        }
-                    },
-                    selectedProjectTasks: [],
-                    getSelectedProjectTasks: () => get().selectedProject?.data.fases || [],
-                    setSelectedProjectByTitle: (title: string) => {
-                        const projects = get().projects;
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === title.toLowerCase());
-                        if (matchingProject) {
-                            set({ selectedProject: matchingProject });
-                            toast.success(`Proyecto seleccionado: ${matchingProject.title}`, {
-                                id: `project-selected-${matchingProject.id}`,
-                            });
-                        } else {
-                            set({ selectedProject: null });
-                            toast.info('Ningún proyecto seleccionado', {
-                                id: 'no-project-selected',
-                            });
-                        }
-                    },
-                    addActivityToTask: (projectId, taskName, activity) => {
-                        set((state) => {
-                            const projectIndex = state.projects.findIndex(p => p.id === projectId);
-                            if (projectIndex === -1) return state;
-
-                            const taskIndex = state.projects[projectIndex].data.fases.findIndex(t => t.nombre === taskName);
-                            if (taskIndex === -1) return state;
-
-                            const updatedTasks = [...state.projects[projectIndex].data.fases];
-                            const task = updatedTasks[taskIndex];
-
-                            // Asegurarse de que el array actividades esté inicializado
-                            if (!task.actividades) {
-                                task.actividades = [];
-                            }
-
-                            task.actividades.push(activity);
-
-                            const updatedProjects = [...state.projects];
-                            updatedProjects[projectIndex].data.fases = updatedTasks;
-
-                            return { projects: updatedProjects };
-                        });
-                    },
-                    actividades: [],
-                    getAllTasksWithStage: () => {
-                        const selectedProject = get().selectedProject;
-                        if (!selectedProject) return [];
-                        return selectedProject.data.fases.flatMap(fase =>
-                            fase.tareas.map(tarea => ({
-                                ...tarea,
-                                etapa: fase.etapa,
-                                'Tiempo de desarrollo': tarea['Tiempo de desarrollo'] || '',
-                                actividades: tarea.actividades || [],
-                                comentarios: tarea.comentarios || [],
-                                tareas: tarea.tareas || []
-                            }))
-                        );
+                    projects: [],
+                    setProjects: (projects) => set({ projects }),
+                    fetchProjects: async (userId: string) => {
+                        await fetchProjects(userId);
+                        set({ projects: useProjectStore.getState().projects });
                     },
                 })
             ) as StateCreator<SidebarStore, [], []>,
@@ -190,8 +67,7 @@ export const useSidebarStore = create<SidebarStore>()(
 
 export const useUpdateSelectedProject = () => {
     const pathname = usePathname();
-    const setSelectedProjectByTitle = useSidebarStore(state => state.setSelectedProjectByTitle);
-    const projects = useSidebarStore(state => state.projects);
+    const projects = useProjectStore(state => state.projects);
 
     useEffect(() => {
         const projectTitle = pathname.split('/').pop();
@@ -206,5 +82,5 @@ export const useUpdateSelectedProject = () => {
                 toast.info('Ningún proyecto seleccionado');
             }
         }
-    }, [pathname, setSelectedProjectByTitle, projects]);
+    }, [pathname, projects]);
 };

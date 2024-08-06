@@ -1,12 +1,12 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { Tarea, useSidebarStore } from '@/stores/sidebar/sidebar.store';
-import { IconCheck, IconCircleCheck, IconCircleDashed, IconClipboardCheck, IconClock, IconEye, IconPlus, IconProgress, IconProgressHelp } from '@tabler/icons-react';
-
+import { IconCircleCheck, IconCircleDashed, IconPlus, IconProgress, IconProgressHelp } from '@tabler/icons-react';
+import { Tarea } from '@/interfaces/task.interface';
+import { useProjectStore } from '@/stores/project/project.store';
 type ColumnId = 'pending' | 'inProgress' | 'inReview' | 'completed';
 
 export const Kanban = () => {
-    const tasks = useSidebarStore((state) => state.getAllTasksWithStage());
+    const tasks = useProjectStore((state) => state.getAllTasksWithStage());
 
     const columns: Record<ColumnId, { title: string; tasks: Tarea[] }> = {
         pending: {
