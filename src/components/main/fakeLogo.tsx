@@ -1,10 +1,10 @@
 'use client';
-import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { useFakeStore } from '@/stores/main/fake.store';
 import PriorityIcon from '@/images/PriorityIcon.svg';
 import PriorityText from '@/images/PriorityText.svg';
 
 export default function LogoSection() {
-    const isCollapsed = useSidebarStore(state => state.isCollapsed);
+    const isCollapsed = useFakeStore(state => state.isCollapsed);
 
     return (
         <div className='w-full min-h-9 pb-3 flex flex-row items-center justify-start gap-1'>

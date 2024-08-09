@@ -7,6 +7,7 @@ import { IconBriefcase2Filled, IconCircuitPushbutton, IconClock, IconClockFilled
 import { Kanban } from '@/modules/kanban';
 import { useProjectStore } from '@/stores/project/project.store';
 import { TaskStatus, TaskChart } from '@/components/coderlabs/taskStatus';
+import { Emoji } from 'emoji-picker-react';
 
 const DashboardPage = () => {
     const getSelectedProjectTasks = useProjectStore(state => state.getSelectedProjectTasks);
@@ -23,7 +24,7 @@ const DashboardPage = () => {
                     <div className='w-full h-full flex flex-col items-start justify-start gap-4 rounded-xl p-6'>
 
                         <div className='flex flex-row items-center gap-1 text-black'>
-                            <span>{selectedProject?.icon}</span>
+                            <Emoji unified={selectedProject?.icon ?? ''} size={20} />
                             <h2 className='text-xl font-bold'>{selectedProject?.title}</h2>
                         </div>
 

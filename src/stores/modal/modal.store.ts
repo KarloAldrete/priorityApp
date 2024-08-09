@@ -18,6 +18,7 @@ interface TaskState {
     recommendations: boolean;
     activeTagIndex: number | null;
     emoji: string;
+    isVisible: boolean;
     setProjectName: (name: string) => void;
     setDescription: (desc: string) => void;
     setTags: (tags: Tag[] | ((prevTags: Tag[]) => Tag[])) => void;
@@ -33,6 +34,7 @@ interface TaskState {
     setActiveTagIndex: (index: SetStateAction<number | null>) => void;
     setEmoji: (emoji: string) => void;
     handleGenerateTasks: (user: any) => Promise<void>;
+    setIsVisible: (isVisible: boolean) => void;
 }
 
 export const useTasksStore = create<TaskState>((set, get) => ({
@@ -49,7 +51,8 @@ export const useTasksStore = create<TaskState>((set, get) => ({
     loading: false,
     recommendations: false,
     activeTagIndex: null,
-    emoji: '',
+    emoji: '1f642',
+    isVisible: false,
     setProjectName: (name) => set({ projectName: name }),
     setDescription: (desc) => set({ description: desc }),
     setTags: (tags: Tag[] | ((prevTags: Tag[]) => Tag[])) => set(state => {
@@ -76,10 +79,12 @@ export const useTasksStore = create<TaskState>((set, get) => ({
     },
     setEmoji: (emoji) => set({ emoji }),
     handleGenerateTasks: async (user: any) => {
-        const { projectName, description, tags, teamSize, payRoll, moneyAmount, workingPeriod, isFreeWeekends, restrictions } = get();
+        const { projectName, description, tags, teamSize, payRoll, moneyAmount, workingPeriod, isFreeWeekends, restrictions, emoji } = get();
         set({ loading: true });
         const data = {
+            user: user,
             projectName,
+            emoji,
             description,
             tags: tags.map(tag => tag.text),
             teamSize,
@@ -89,7 +94,15 @@ export const useTasksStore = create<TaskState>((set, get) => ({
             isFreeWeekends,
             restrictions
         };
-        const object = await getAnswer(JSON.stringify(data), user?.id ?? '');
+        const object = await getAnswer(JSON.stringify(data), user, emoji);
         set({ loading: false, generation: object });
-    }
+
+        if (object) {
+            setTimeout(() => {
+                set({ isVisible: false });
+                window.location.reload();
+            }, 2000);
+        }
+    },
+    setIsVisible: (isVisible) => set({ isVisible })
 }));

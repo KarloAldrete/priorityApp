@@ -82,7 +82,7 @@ async function generateProjectTasks(description: string, projectData: any) {
     }
 }
 
-export async function getAnswer(description: string, user: string) {
+export async function getAnswer(description: string, user: string, emoji: string) {
     console.log(description);
 
     const projectData = JSON.parse(description);
@@ -103,7 +103,7 @@ export async function getAnswer(description: string, user: string) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title: projectData.projectName, data: responseObject, user: user })
+            body: JSON.stringify({ title: projectData.projectName, data: responseObject, user: user, emoji: emoji })
         });
     } catch (error) {
         console.error('Error al enviar los datos a la API:', error);

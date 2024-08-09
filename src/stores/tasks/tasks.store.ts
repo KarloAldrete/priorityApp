@@ -23,6 +23,6 @@ export const useTasksStore = create<TasksStore>((set) => ({
     setActiveTab: (tab: string) => set({ activeTab: tab }),
     activeMenuTab: 'General',
     setActiveMenuTab: (tab: string) => set({ activeMenuTab: tab }),
-    menuTabs: ['General', 'Fases', 'Diagrama', 'Kanban', 'Pagos'],
+    menuTabs: ['General', 'Fases', 'Diagrama', 'Kanban'],
     setMenuTabs: (tabs: string[]) => set({ menuTabs: tabs }),
 }));

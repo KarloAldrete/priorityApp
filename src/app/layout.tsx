@@ -26,7 +26,16 @@ export default function RootLayout({
       <body className='min-w-screen min-h-screen w-screen h-screen font-geist'>
 
         <div className='w-full h-full font-geist rounded-xl bg-white flex flex-col gap-4'>
-          <ClerkProvider>
+          <ClerkProvider
+            appearance={{
+              variables: {
+                fontFamily: 'Inter',
+                colorPrimary: '#000000',
+                colorText: '#09090B',
+                colorTextSecondary: '#64748B',
+              }
+            }}
+          >
 
             {/* <header className='w-full flex flex-row justify-end items-center p-2'>
               <SignedOut>

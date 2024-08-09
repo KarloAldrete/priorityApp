@@ -1,5 +1,6 @@
 'use client';
 import { useSidebarStore } from '@/stores/sidebar/sidebar.store';
+import { Emoji } from 'emoji-picker-react';
 import { useRouter } from 'next/navigation';
 
 
@@ -8,15 +9,15 @@ export default function Home() {
     const data = useSidebarStore(state => state.projects);
 
     return (
-        <div className='w-full h-full flex flex-col items-start justify-start gap-5'>
+        <div className='w-full h-full flex flex-col items-start justify-start gap-5 p-8'>
 
-            <h2>Dashboard</h2>
+            <h2 className='text-2xl font-bold text-[#020617]'>Dashboard General</h2>
 
             {data &&
-                <div className='w-full h-auto flex flex-row items-start justify-start gap-4 px-8'>
+                <div className='w-full h-auto flex flex-row items-start justify-start gap-4'>
 
                     {data.map((project) => (
-                        <div key={project.id} className='w-full h-auto max-w-[248px] border border-[#E2E8F0] rounded-lg cursor-default'>
+                        <div key={project.id} className='w-full h-auto max-w-[300px] border border-[#E2E8F0] rounded-lg cursor-default'>
 
                             <div className='w-full h-auto flex flex-row items-center justify-between px-3 py-3 gap-5'>
 
@@ -27,7 +28,7 @@ export default function Home() {
                                         <div className='w-auto h-auto flex flex-row items-center justify-start gap-2'>
 
                                             <div className='w-7 h-7 flex flex-row items-center justify-center p-1 bg-[#F1F5F9] rounded-full'>
-                                                <span className='w-5 h-5' style={{ transform: 'translateY(-2px) translateX(-.5px)' }}>{project.icon}</span>
+                                                <Emoji unified={project.icon ?? ''} size={20} />
                                             </div>
 
                                             <span className='text-sm leading-5 font-medium text-[#020617]'>{project.title}</span>

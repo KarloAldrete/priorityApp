@@ -61,9 +61,9 @@ export const useProjectStore = create<ProjectStore>()(
                     },
                     selectedProject: null,
                     setSelectedProjectFromPathname: (pathname: string) => {
-                        const projectName = pathname.split('/').pop();
+                        const projectName = decodeURIComponent(pathname.split('/').pop() || '').replace(/%20/g, ' ').trim();
                         const projects = get().projects;
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === projectName?.toLowerCase());
+                        const matchingProject = projects.find(p => p.title.toLowerCase() === projectName.toLowerCase());
                         if (matchingProject) {
                             set({ selectedProject: matchingProject });
                             toast.success(`Proyecto seleccionado: ${matchingProject.title}`);
@@ -76,7 +76,8 @@ export const useProjectStore = create<ProjectStore>()(
                     getSelectedProjectTasks: () => get().selectedProject?.data.fases || [],
                     setSelectedProjectByTitle: (title: string) => {
                         const projects = get().projects;
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === title.toLowerCase());
+                        const formattedTitle = title.replace(/%20/g, ' ').toLowerCase();
+                        const matchingProject = projects.find(p => p.title.toLowerCase() === formattedTitle);
                         if (matchingProject) {
                             set({ selectedProject: matchingProject });
                             toast.success(`Proyecto seleccionado: ${matchingProject.title}`, {
