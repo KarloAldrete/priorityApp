@@ -98,7 +98,7 @@ export async function getAnswer(description: string, user: string, emoji: string
     console.log(responseObject);
 
     try {
-        await fetch('http://localhost:3000/api/creation', {
+        await fetch('https://priority-sepia.vercel.app/api/creation', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
