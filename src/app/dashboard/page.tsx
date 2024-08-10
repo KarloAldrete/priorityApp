@@ -35,7 +35,19 @@ export default function Home() {
 
                                         </div>
 
-                                        <span className='text-2xl leading-6 font-bold text-[#020617]'>$10,800</span>
+                                        {project.data &&
+                                            <span className='text-2xl leading-6 font-bold text-[#020617]'>
+                                                $
+                                                {(
+                                                    project.data?.fases?.reduce((acc, fase) => {
+                                                        const tiempo = fase['Tiempo de desarrollo'];
+                                                        if (!tiempo) return acc;
+                                                        const horas = parseInt(tiempo.split(' ')[0]);
+                                                        return isNaN(horas) ? acc : acc + horas;
+                                                    }, 0) * 25
+                                                ).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
+                                            </span>
+                                        }
 
                                     </div>
 

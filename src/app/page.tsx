@@ -31,12 +31,12 @@ export default async function Page() {
               mode='modal'
               fallbackRedirectUrl={'/dashboard'}
             >
-              <button className='bg-black text-white text-base leading-5 font-semibold px-4 py-2 rounded'>Regístrate</button>
+              <button className='bg-[#7174FE] text-white text-base leading-5 font-semibold px-4 py-2 rounded'>Regístrate</button>
             </SignUpButton>
           </SignedOut>
 
           <SignedIn>
-            <Link href='/dashboard' className='bg-black text-white text-base leading-5 font-semibold px-4 py-2 rounded'>Dashboard</Link>
+            <Link href='/dashboard' className='bg-[#7174FE] text-white text-base leading-5 font-semibold px-4 py-2 rounded'>Dashboard</Link>
           </SignedIn>
 
         </div>

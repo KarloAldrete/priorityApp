@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { IconCircleCheck, IconCircleDashed, IconPlus, IconProgress, IconProgressHelp } from '@tabler/icons-react';
 import { Tarea } from '@/interfaces/task.interface';
@@ -7,8 +7,9 @@ type ColumnId = 'pending' | 'inProgress' | 'inReview' | 'completed';
 
 export const Kanban = () => {
     const tasks = useProjectStore((state) => state.getAllTasksWithStage());
+    const updateProjectTaskState = useProjectStore((state) => state.updateProjectTaskState);
 
-    const columns: Record<ColumnId, { title: string; tasks: Tarea[] }> = {
+    const [columns, setColumns] = useState<Record<ColumnId, { title: string; tasks: Tarea[] }>>({
         pending: {
             title: 'Pendiente',
             tasks: tasks.filter(task => task.estado === 'Pendiente')
@@ -19,13 +20,13 @@ export const Kanban = () => {
         },
         inReview: {
             title: 'En Revisión',
-            tasks: tasks.filter(task => task.estado === 'En revision')
+            tasks: tasks.filter(task => task.estado === 'En Revisión')
         },
         completed: {
             title: 'Completado',
             tasks: tasks.filter(task => task.estado === 'Completado')
         }
-    };
+    });
 
     const getColumnIcon = (columnId: ColumnId) => {
         switch (columnId) {
@@ -43,24 +44,51 @@ export const Kanban = () => {
     };
 
     const onDragEnd = (result: DropResult) => {
-        const { source, destination } = result;
+        const { source, destination, draggableId } = result;
 
-        if (!destination) return;
+        if (!destination) {
+            return;
+        }
 
-        const sourceColumn = columns[source.droppableId as ColumnId];
-        const destColumn = columns[destination.droppableId as ColumnId];
-        const sourceTasks = [...sourceColumn.tasks];
-        const destTasks = [...destColumn.tasks];
+        const sourceColumnId = source.droppableId as ColumnId;
+        const destColumnId = destination.droppableId as ColumnId;
+
+        const sourceColumn = columns[sourceColumnId];
+        const destColumn = columns[destColumnId];
+
+        const sourceTasks = Array.from(sourceColumn.tasks);
+        const destTasks = Array.from(destColumn.tasks);
 
         const [removed] = sourceTasks.splice(source.index, 1);
+
         destTasks.splice(destination.index, 0, removed);
 
-        columns[source.droppableId as ColumnId].tasks = sourceTasks;
-        columns[destination.droppableId as ColumnId].tasks = destTasks;
+        const updatedColumns = {
+            ...columns,
+            [sourceColumnId]: {
+                ...sourceColumn,
+                tasks: sourceTasks
+            },
+            [destColumnId]: {
+                ...destColumn,
+                tasks: destTasks
+            }
+        };
 
-        const allTasks = Object.values(columns).flatMap(column =>
-            column.tasks.map(task => ({ ...task, estado: column.title }))
-        );
+        setColumns(updatedColumns);
+
+        const taskName = draggableId.split('-')[0];
+        const columnTitles: Record<ColumnId, string> = {
+            pending: 'Pendiente',
+            inProgress: 'En Progreso',
+            inReview: 'En Revisión',
+            completed: 'Completado'
+        };
+
+        if (columnTitles[destColumnId]) {
+            updateProjectTaskState(taskName, removed.descripcion, columnTitles[destColumnId]);
+        }
+
     };
 
     return (
@@ -89,7 +117,7 @@ export const Kanban = () => {
                                     </div>
                                     <div className="w-full h-full flex flex-col gap-2 px-3 overflow-y-auto mb-3">
                                         {column.tasks.map((task, index) => (
-                                            <Draggable key={task.nombre} draggableId={task.nombre} index={index}>
+                                            <Draggable key={task.nombre} draggableId={`${task.nombre}-${task.id}-${task.descripcion}`} index={index}>
                                                 {(provided) => (
                                                     <div
                                                         ref={provided.innerRef}

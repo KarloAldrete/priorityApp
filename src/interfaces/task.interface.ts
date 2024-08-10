@@ -11,6 +11,7 @@ export interface Comentario {
 }
 
 export interface Subtarea {
+    id: string; // Añadir esta línea
     nombre: string;
     descripcion: string;
     completed: boolean;
@@ -22,6 +23,7 @@ export interface Subtarea {
 }
 
 export interface Tarea {
+    id: string; // Añadir esta línea si también falta en Tarea
     nombre: string;
     descripcion: string;
     'Tiempo de desarrollo': string;

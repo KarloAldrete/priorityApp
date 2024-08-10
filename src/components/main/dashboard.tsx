@@ -18,11 +18,11 @@ export default function Dashboard() {
     return (
         <div className={`w-full h-full flex flex-col items-center justify-start ${inter.className} pb-8`}>
 
-            <ResizablePanelGroup direction="horizontal" className='rounded-xl w-full h-auto max-w-[90%]'>
+            <ResizablePanelGroup direction="horizontal" className='rounded-xl w-full h-auto max-w-[1200px]'>
 
                 <Sidebar />
 
-                <ResizablePanel defaultSize={85} className='w-full h-full flex flex-col items-center justify-center bg-white rounded-xl ml-4 border border-[#E8E6EF]'>
+                <ResizablePanel defaultSize={85} className='w-full h-[700px] flex flex-col items-center justify-center bg-white rounded-xl ml-4 border border-[#E8E6EF]'>
                     <div className='w-full h-full flex flex-row items-start justify-start'>
                         {activeMenuTab == 'General' &&
                             <>

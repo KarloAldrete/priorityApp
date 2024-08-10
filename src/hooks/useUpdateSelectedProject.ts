@@ -9,15 +9,19 @@ export const useUpdateSelectedProject = () => {
     const projects = useProjectStore(state => state.projects);
 
     useEffect(() => {
-        const projectTitle = pathname.split('/').pop();
-        if (projectTitle) {
-            const matchingProject = projects.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
+        const projectName = decodeURIComponent(pathname.split('/').pop() || '').replace(/%20/g, ' ').toLowerCase();
+        console.log('🔍 - Nombre del proyecto extraído del pathname:', projectName);
+        if (projectName) {
+            console.log('🔎 - Proyectos disponibles:', projects);
+            const matchingProject = projects.find(p => p.title.toLowerCase() === projectName);
+            console.log('🔎 - Proyecto coincidente encontrado:', matchingProject);
             if (matchingProject) {
                 setSelectedProjectByTitle(matchingProject.title);
-            } else if (projectTitle === 'dashboard') {
-                setSelectedProjectByTitle('Dashboard');
+                console.log('✅ - Proyecto seleccionado:', matchingProject.title);
+                toast.success(`Proyecto seleccionado: ${matchingProject.title}`);
             } else {
                 setSelectedProjectByTitle('');
+                console.log('❌ - Ningún proyecto seleccionado');
                 toast.info('Ningún proyecto seleccionado');
             }
         }

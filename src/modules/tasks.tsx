@@ -216,12 +216,12 @@ const Tasks = () => {
 
                         </div>
 
-                        <div className='w-full h-full p-4 flex flex-col items-start justify-start gap-2 border-b border-[#C4CBD4]'>
+                        <div className='w-full h-auto p-4 flex flex-col items-start justify-start gap-2 border-b '>
                             <span className='text-lg font-semibold text-black'>{selectedTarea.nombre}</span>
                             <span className='text-sm leading-5 font-normal'>{selectedTarea.descripcion}</span>
                         </div>
 
-                        <div className='w-full h-auto p-4 flex flex-col items-start justify-start gap-5'>
+                        <div className='w-full h-full p-4 flex flex-col items-start justify-start gap-5 overflow-y-auto mb-12'>
 
                             <div className='w-full flex flex-row items-center justify-between'>
 
@@ -265,7 +265,7 @@ const Tasks = () => {
                             </div>
 
                             {activeTab === 'tareas' && (
-                                <div className='w-full h-auto max-h-[400px] overflow-y-auto flex flex-col items-start justify-start gap-3'>
+                                <div className='w-full h-full overflow-y-auto flex flex-col items-start justify-start gap-3 mb-3'>
                                     {selectedTarea.tareas?.length > 0 ? (
                                         selectedTarea.tareas.map((subtarea, index) => (
                                             <div key={index} className='w-full h-auto flex flex-row items-center justify-between gap-2 px-3 py-2.5 border border-[#E4E4E7] rounded-md'>

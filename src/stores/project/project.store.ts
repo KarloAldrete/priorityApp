@@ -1,8 +1,8 @@
 import { create, StateCreator } from 'zustand';
 import { createClient } from '@/utils/supabase/client';
 import { devtools, createJSONStorage, persist } from 'zustand/middleware';
-import { toast } from 'sonner';
 import { ProjectData, Tarea, Actividad } from '@/interfaces/task.interface';
+type ColumnId = 'pending' | 'inProgress' | 'inReview' | 'completed';
 
 interface ProjectStore {
     projects: ProjectData[];
@@ -11,11 +11,14 @@ interface ProjectStore {
     selectedProject: ProjectData | null;
     selectedProjectTasks: Tarea[];
     getSelectedProjectTasks: () => Tarea[];
-    setSelectedProjectFromPathname: (pathname: string) => void;
     setSelectedProjectByTitle: (title: string) => void;
     addActivityToTask: (projectId: number, taskName: string, activity: Actividad) => void;
     actividades: Actividad[];
     getAllTasksWithStage: () => Tarea[];
+    setTaskState: (taskId: string, newState: string) => void;
+    columns: Record<ColumnId, { title: string; tasks: Tarea[] }>;
+    setColumns: (columns: Record<ColumnId, { title: string; tasks: Tarea[] }>) => void;
+    updateProjectTaskState: (taskName: string, taskDescription: string, newState: string) => void;
 }
 
 const syncWithSessionStorage = (config: StateCreator<ProjectStore>) =>
@@ -41,7 +44,6 @@ export const useProjectStore = create<ProjectStore>()(
                         const { data, error } = await supabase.from('projects').select('*').eq('owner', userId);
                         if (error) {
                             console.error('Error fetching projects:', error);
-                            toast.error('Error al obtener proyectos');
                         } else {
                             const projects = data.map((project: ProjectData) => ({
                                 id: project.id,
@@ -51,7 +53,6 @@ export const useProjectStore = create<ProjectStore>()(
                                 icon: project.icon
                             }));
                             set({ projects });
-                            toast.success('Datos obtenidos de Supabase');
                         }
                     },
                     setProjects: (projects: ProjectData[]) => {
@@ -60,34 +61,22 @@ export const useProjectStore = create<ProjectStore>()(
                         console.log('✅ - Projects state updated:', get().projects);
                     },
                     selectedProject: null,
-                    setSelectedProjectFromPathname: (pathname: string) => {
-                        const projectName = decodeURIComponent(pathname.split('/').pop() || '').replace(/%20/g, ' ').trim();
-                        const projects = get().projects;
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === projectName.toLowerCase());
-                        if (matchingProject) {
-                            set({ selectedProject: matchingProject });
-                            toast.success(`Proyecto seleccionado: ${matchingProject.title}`);
-                        } else {
-                            set({ selectedProject: null });
-                            toast.info('Ningún proyecto seleccionado');
-                        }
-                    },
                     selectedProjectTasks: [],
                     getSelectedProjectTasks: () => get().selectedProject?.data.fases || [],
                     setSelectedProjectByTitle: (title: string) => {
+                        console.log('🔍 - Título recibido:', title);
                         const projects = get().projects;
-                        const formattedTitle = title.replace(/%20/g, ' ').toLowerCase();
-                        const matchingProject = projects.find(p => p.title.toLowerCase() === formattedTitle);
+                        console.log('📂 - Proyectos actuales:', projects);
+                        const formattedTitle = title.replace(/\s+/g, '-').toLowerCase();
+                        console.log('🔤 - Título formateado:', formattedTitle);
+                        const matchingProject = projects.find(p => p.title.toLowerCase().replace(/\s+/g, '-') === formattedTitle);
+                        console.log('🔎 - Proyecto coincidente:', matchingProject);
                         if (matchingProject) {
                             set({ selectedProject: matchingProject });
-                            toast.success(`Proyecto seleccionado: ${matchingProject.title}`, {
-                                id: `project-selected-${matchingProject.id}`,
-                            });
+                            console.log('✅ - Proyecto seleccionado:', matchingProject);
                         } else {
                             set({ selectedProject: null });
-                            toast.info('Ningún proyecto seleccionado', {
-                                id: 'no-project-selected',
-                            });
+                            console.log('❌ - Ningún proyecto seleccionado');
                         }
                     },
                     addActivityToTask: (projectId, taskName, activity) => {
@@ -128,7 +117,45 @@ export const useProjectStore = create<ProjectStore>()(
                             }))
                         );
                     },
-                })
+                    setTaskState: (taskId: string, newState: string) => {
+                        set((state) => {
+                            const updatedProjects = state.projects.map(project => {
+                                const updatedFases = project.data.fases.map(fase => {
+                                    const updatedTareas = fase.tareas.map(tarea => {
+                                        if (tarea.id === taskId) {
+                                            return { ...tarea, estado: newState };
+                                        }
+                                        return tarea;
+                                    });
+                                    return { ...fase, tareas: updatedTareas };
+                                });
+                                return { ...project, data: { ...project.data, fases: updatedFases } };
+                            });
+                            return { projects: updatedProjects };
+                        });
+                    },
+                    columns: {
+                        pending: { title: 'Pendiente', tasks: [] },
+                        inProgress: { title: 'En Progreso', tasks: [] },
+                        inReview: { title: 'En Revisión', tasks: [] },
+                        completed: { title: 'Completado', tasks: [] }
+                    },
+                    setColumns: (columns) => set({ columns }),
+                    updateProjectTaskState: (taskName, taskDescription, newState) => {
+                        set((state) => {
+                            state.projects.forEach(project => {
+                                project.data.fases.forEach(fase => {
+                                    fase.tareas.forEach(tarea => {
+                                        if (tarea.nombre === taskName && tarea.descripcion === taskDescription) {
+                                            tarea.estado = newState;
+                                        }
+                                    });
+                                });
+                            });
+                            return { projects: [...state.projects] };
+                        });
+                    }
+                }),
             ) as StateCreator<ProjectStore, [], []>,
         ),
         {

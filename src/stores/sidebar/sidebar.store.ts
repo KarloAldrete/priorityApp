@@ -2,11 +2,10 @@ import { create, StateCreator } from 'zustand';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { devtools, createJSONStorage, persist } from 'zustand/middleware';
-import { toast } from 'sonner';
 import { ProjectData } from '@/interfaces/task.interface';
 import { useProjectStore } from '@/stores/project/project.store';
 
-const { fetchProjects, setSelectedProjectFromPathname, setProjects, setSelectedProjectByTitle } = useProjectStore.getState();
+const { fetchProjects, setSelectedProjectByTitle } = useProjectStore.getState();
 
 interface SidebarStore {
     isCollapsed: boolean;
@@ -79,7 +78,6 @@ export const useUpdateSelectedProject = () => {
                 setSelectedProjectByTitle('Dashboard');
             } else {
                 setSelectedProjectByTitle('');
-                toast.info('Ningún proyecto seleccionado');
             }
         }
     }, [pathname, projects]);
