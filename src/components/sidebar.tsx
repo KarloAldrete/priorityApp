@@ -37,7 +37,7 @@ export default function Sidebar() {
     return (
         <>
             <ResizablePanel onCollapse={handleCollapse} onExpand={handleCollapse} collapsible={true} minSize={15} defaultSize={3} maxSize={15} className='w-full h-auto min-w-[62px] rounded-xl font-geist'>
-                <title>{`Priority | ${selectedProject?.title ? `${selectedProject.icon} ${selectedProject.title}` : 'Dashboard'}`}</title>
+                <title>{`Priority | ${selectedProject?.title ? `${selectedProject.title}` : 'Dashboard'}`}</title>
                 <TooltipProvider delayDuration={50}>
                     <div className='rounded-xl bg-white w-full h-full flex flex-col items-start justify-between px-3 py-3 border border-[#E8E6EF]'>
                         <div className='w-full h-auto flex flex-col items-start justify-start gap-2.5'>
