@@ -57,10 +57,6 @@ export const useTasksStore = create<TaskState>((set, get) => ({
     setDescription: (desc) => set({ description: desc }),
     setTags: (tags: Tag[] | ((prevTags: Tag[]) => Tag[])) => set(state => {
         const newTags = typeof tags === 'function' ? tags(state.tags) : tags;
-        const addedTag = newTags.find(tag => !state.tags.some(t => t.id === tag.id));
-        if (addedTag) {
-            // toast.success(`Se creó la etiqueta: ${addedTag.text}`);
-        }
         return { tags: newTags };
     }),
     setTeamSize: (size) => set({ teamSize: size }),

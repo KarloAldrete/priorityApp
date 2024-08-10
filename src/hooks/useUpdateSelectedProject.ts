@@ -1,7 +1,6 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useProjectStore } from '@/stores/project/project.store';
-import { toast } from 'sonner';
 
 export const useUpdateSelectedProject = () => {
     const pathname = usePathname();
@@ -18,11 +17,9 @@ export const useUpdateSelectedProject = () => {
             if (matchingProject) {
                 setSelectedProjectByTitle(matchingProject.title);
                 console.log('✅ - Proyecto seleccionado:', matchingProject.title);
-                toast.success(`Proyecto seleccionado: ${matchingProject.title}`);
             } else {
                 setSelectedProjectByTitle('');
                 console.log('❌ - Ningún proyecto seleccionado');
-                toast.info('Ningún proyecto seleccionado');
             }
         }
     }, [pathname, setSelectedProjectByTitle, projects]);

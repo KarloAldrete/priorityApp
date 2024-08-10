@@ -38,11 +38,13 @@ const defaultProjects: ProjectData[] = [
         data: {
             fases: [
                 {
+                    id: '1',
                     etapa: "Planificación",
                     nombre: "Planificación",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Investigación de mercado",
                             descripcion: "Analizar el mercado de productos naturales y la competencia online.",
@@ -53,6 +55,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Definición de requisitos",
                             descripcion: "Definir las funcionalidades y características del sitio web.",
@@ -63,6 +66,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Diseño de la arquitectura",
                             descripcion: "Definir la estructura y flujo del sitio web.",
@@ -73,6 +77,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Planificación de desarrollo",
                             descripcion: "Crear un plan detallado de desarrollo con hitos y plazos.",
@@ -89,11 +94,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '2',
                     etapa: "Diseño",
                     nombre: "Diseño",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Diseño de la interfaz de usuario",
                             descripcion: "Crear diseños para la página de inicio, productos, carrito, pago y perfil de usuario.",
@@ -104,6 +111,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Diseño de la experiencia del usuario",
                             descripcion: "Optimizar el flujo del usuario y la usabilidad del sitio web.",
@@ -114,6 +122,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Creación de prototipos",
                             descripcion: "Crear prototipos interactivos para validar el diseño y la funcionalidad.",
@@ -130,11 +139,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '3',
                     etapa: "Desarrollo",
                     nombre: "Desarrollo",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Configuración del entorno de desarrollo",
                             descripcion: "Configurar NextJS, Supabase, Clerk, TailwindCSS y Stripe.",
@@ -145,6 +156,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la página de inicio",
                             descripcion: "Implementar la página de inicio con NextJS y TailwindCSS.",
@@ -155,6 +167,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la página de productos",
                             descripcion: "Implementar la página de productos con NextJS y TailwindCSS.",
@@ -165,6 +178,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Integración de la base de datos",
                             descripcion: "Integrar Supabase para gestionar los productos, usuarios y pedidos.",
@@ -175,6 +189,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '5',
                             estado: "Pendiente",
                             nombre: "Desarrollo del carrito de compras",
                             descripcion: "Implementar el carrito de compras con NextJS y TailwindCSS.",
@@ -185,6 +200,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '6',
                             estado: "Pendiente",
                             nombre: "Integración de la pasarela de pagos",
                             descripcion: "Integrar Stripe para procesar los pagos.",
@@ -195,6 +211,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '7',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la página de pago",
                             descripcion: "Implementar la página de pago con NextJS y TailwindCSS.",
@@ -205,6 +222,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '8',
                             estado: "Pendiente",
                             nombre: "Configuración de la autenticación",
                             descripcion: "Configurar la autenticación de usuarios con Clerk.",
@@ -215,6 +233,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '9',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la sección de seguimiento de pedidos",
                             descripcion: "Implementar la sección para que los usuarios puedan ver el estado de sus pedidos.",
@@ -231,11 +250,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '4',
                     etapa: "Pruebas",
                     nombre: "Pruebas",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Pruebas unitarias",
                             descripcion: "Realizar pruebas unitarias de los componentes con Jest.",
@@ -246,6 +267,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Pruebas de integración",
                             descripcion: "Probar la integración de la pasarela de pagos con Stripe.",
@@ -256,6 +278,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Pruebas de usabilidad",
                             descripcion: "Realizar pruebas de usabilidad con usuarios reales.",
@@ -266,6 +289,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Pruebas de rendimiento",
                             descripcion: "Evaluar el rendimiento del sitio web bajo diferentes cargas.",
@@ -276,6 +300,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '5',
                             estado: "Pendiente",
                             nombre: "Pruebas de seguridad",
                             descripcion: "Verificar la seguridad del sitio web contra vulnerabilidades.",
@@ -292,11 +317,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '5',
                     etapa: "Despliegue",
                     nombre: "Despliegue",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Configuración de despliegue continuo",
                             descripcion: "Configurar el despliegue continuo con Vercel.",
@@ -307,6 +334,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Despliegue del sitio web",
                             descripcion: "Desplegar el sitio web en Vercel.",
@@ -317,6 +345,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Monitoreo y mantenimiento",
                             descripcion: "Monitorear el rendimiento y la seguridad del sitio web.",
@@ -343,11 +372,13 @@ const defaultProjects: ProjectData[] = [
         data: {
             fases: [
                 {
+                    id: '1',
                     etapa: "Planificación",
                     nombre: "Planificación",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Investigación de mercado",
                             descripcion: "Analizar el mercado de aplicaciones de fitness y la competencia.",
@@ -358,6 +389,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Definición de requisitos",
                             descripcion: "Definir las funcionalidades y características de la aplicación.",
@@ -368,6 +400,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Diseño de la arquitectura",
                             descripcion: "Definir la estructura y flujo de la aplicación.",
@@ -378,6 +411,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Planificación de desarrollo",
                             descripcion: "Crear un plan detallado de desarrollo con hitos y plazos.",
@@ -394,11 +428,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '2',
                     etapa: "Diseño",
                     nombre: "Diseño",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Diseño de la interfaz de usuario",
                             descripcion: "Crear diseños para la pantalla de inicio, seguimiento de ejercicios, nutrición y perfil de usuario.",
@@ -409,6 +445,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Diseño de la experiencia del usuario",
                             descripcion: "Optimizar el flujo del usuario y la usabilidad de la aplicación.",
@@ -419,6 +456,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Creación de prototipos",
                             descripcion: "Crear prototipos interactivos para validar el diseño y la funcionalidad.",
@@ -435,11 +473,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '3',
                     etapa: "Desarrollo",
                     nombre: "Desarrollo",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Configuración del entorno de desarrollo",
                             descripcion: "Configurar React Native, Firebase, y TailwindCSS.",
@@ -450,6 +490,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la pantalla de inicio",
                             descripcion: "Implementar la pantalla de inicio con React Native y TailwindCSS.",
@@ -460,6 +501,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la pantalla de seguimiento de ejercicios",
                             descripcion: "Implementar la pantalla de seguimiento de ejercicios con React Native y TailwindCSS.",
@@ -470,6 +512,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Integración de la base de datos",
                             descripcion: "Integrar Firebase para gestionar los datos de usuarios y ejercicios.",
@@ -480,6 +523,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '5',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la pantalla de nutrición",
                             descripcion: "Implementar la pantalla de nutrición con React Native y TailwindCSS.",
@@ -490,6 +534,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '6',
                             estado: "Pendiente",
                             nombre: "Integración de la pasarela de pagos",
                             descripcion: "Integrar Stripe para procesar los pagos de suscripciones.",
@@ -500,6 +545,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '7',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la pantalla de perfil de usuario",
                             descripcion: "Implementar la pantalla de perfil de usuario con React Native y TailwindCSS.",
@@ -510,6 +556,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '8',
                             estado: "Pendiente",
                             nombre: "Configuración de la autenticación",
                             descripcion: "Configurar la autenticación de usuarios con Firebase Authentication.",
@@ -520,6 +567,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '9',
                             estado: "Pendiente",
                             nombre: "Desarrollo de la sección de seguimiento de progreso",
                             descripcion: "Implementar la sección para que los usuarios puedan ver su progreso en ejercicios y nutrición.",
@@ -536,11 +584,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '4',
                     etapa: "Pruebas",
                     nombre: "Pruebas",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Pruebas unitarias",
                             descripcion: "Realizar pruebas unitarias de los componentes con Jest.",
@@ -551,6 +601,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Pruebas de integración",
                             descripcion: "Probar la integración de la pasarela de pagos con Stripe.",
@@ -561,6 +612,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Pruebas de usabilidad",
                             descripcion: "Realizar pruebas de usabilidad con usuarios reales.",
@@ -571,6 +623,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '4',
                             estado: "Pendiente",
                             nombre: "Pruebas de rendimiento",
                             descripcion: "Evaluar el rendimiento de la aplicación bajo diferentes cargas.",
@@ -581,6 +634,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '5',
                             estado: "Pendiente",
                             nombre: "Pruebas de seguridad",
                             descripcion: "Verificar la seguridad de la aplicación contra vulnerabilidades.",
@@ -597,11 +651,13 @@ const defaultProjects: ProjectData[] = [
                     comentarios: []
                 },
                 {
+                    id: '5',
                     etapa: "Despliegue",
                     nombre: "Despliegue",
                     estado: "Pendiente",
                     tareas: [
                         {
+                            id: '1',
                             estado: "Pendiente",
                             nombre: "Configuración de despliegue continuo",
                             descripcion: "Configurar el despliegue continuo con App Center.",
@@ -612,6 +668,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '2',
                             estado: "Pendiente",
                             nombre: "Despliegue de la aplicación",
                             descripcion: "Desplegar la aplicación en App Store y Google Play.",
@@ -622,6 +679,7 @@ const defaultProjects: ProjectData[] = [
                             tareas: []
                         },
                         {
+                            id: '3',
                             estado: "Pendiente",
                             nombre: "Monitoreo y mantenimiento",
                             descripcion: "Monitorear el rendimiento y la seguridad de la aplicación.",
