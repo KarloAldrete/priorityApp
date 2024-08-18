@@ -4,6 +4,7 @@ import { generateObject } from 'ai';
 import { z } from 'zod';
 
 async function generateProjectTasks(description: string, projectData: any) {
+    console.log('Generando tareas del proyecto...');
     const prompt = `
         Descripción: ${description}
         Necesitamos una lista de tareas con nombres específicos y creativos que no simplemente repitan el nombre de la etapa.
@@ -73,8 +74,12 @@ async function generateProjectTasks(description: string, projectData: any) {
                 }))
             }),
             prompt: prompt.trim(),
+            headers: {
+                'Referer': 'https://priority-sepia.vercel.app/*'
+            }
         });
 
+        console.log('Tareas generadas:', response.object);
         return response.object;
     } catch (error) {
         console.error('Error al generar el objeto:', error);
@@ -83,7 +88,7 @@ async function generateProjectTasks(description: string, projectData: any) {
 }
 
 export async function getAnswer(description: string, user: string, emoji: string) {
-    console.log(description);
+    console.log('Obteniendo respuesta para:', description);
 
     const projectData = JSON.parse(description);
     let responseObject;
@@ -95,7 +100,7 @@ export async function getAnswer(description: string, user: string, emoji: string
         throw new Error('Error al generar las tareas del proyecto');
     }
 
-    console.log(responseObject);
+    console.log('Respuesta del objeto:', responseObject);
 
     try {
         await fetch('https://priority-sepia.vercel.app/api/creation', {

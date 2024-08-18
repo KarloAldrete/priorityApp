@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { Tag } from 'emblor';
 import { getAnswer } from '@/app/actions';
 import { SetStateAction } from 'react';
